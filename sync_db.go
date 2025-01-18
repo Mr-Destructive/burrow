@@ -1,0 +1,85 @@
+package main
+
+import (
+	"database/sql"
+	"encoding/json"
+	"fmt"
+	_ "github.com/tursodatabase/libsql-client-go/libsql"
+	"os"
+	"regexp"
+	"strings"
+	"time"
+)
+
+func main() {
+
+	dbURL := "http://127.0.0.1:8080" //os.Getenv("TURSO_DATABASE_URL")
+	dbUrl := fmt.Sprintf("%s", dbURL)
+
+	db, err := sql.Open("libsql", dbUrl)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "failed to open db %s: %s", dbUrl, err)
+		os.Exit(1)
+	}
+	defer db.Close()
+	oneDayBackTime := time.Now().AddDate(0, 0, -1)
+
+	query := fmt.Sprintf("SELECT * FROM posts WHERE created_at > '%s';", oneDayBackTime)
+
+	rows, err := db.Query(query)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "failed to query db %s: %s", dbUrl, err)
+		os.Exit(1)
+	}
+	defer rows.Close()
+	for rows.Next() {
+		var id int
+		var title string
+		var slug string
+		var body string
+		var created string
+		var updated string
+		var metadata string
+		var authorId int64
+		err := rows.Scan(&id, &title, &slug, &body, &metadata, &created, &updated, &authorId)
+		if err != nil {
+			fmt.Println(err)
+		}
+		fmt.Println(id, title, slug, body, created, updated, metadata, authorId)
+		writePostFile(title, slug, body, metadata, created, updated)
+	}
+}
+
+func writePostFile(title, slug, body, metadataStr, created, updated string) {
+	metadata := make(map[string]interface{})
+	fmt.Println(metadataStr)
+	err := json.Unmarshal([]byte(metadataStr), &metadata)
+	fmt.Println(metadata)
+	if err != nil {
+		panic(err)
+	}
+	postDir, ok := metadata["post_dir"]
+	if !ok {
+		postDir = "posts"
+	}
+	_, ok = metadata["slug"]
+	if !ok {
+		slug = Slugify(title)
+	}
+	filePath := fmt.Sprintf("%s/%s.md", postDir, slug)
+	fileContent := fmt.Sprintf("%s\n\n%s", metadataStr, body)
+	os.WriteFile(filePath, []byte(fileContent), 0660)
+
+}
+
+func Slugify(input string) string {
+	reg, err := regexp.Compile("[^a-zA-Z0-9]+")
+	if err != nil {
+		panic(err)
+	}
+	processedString := reg.ReplaceAllString(input, " ")
+	processedString = strings.TrimSpace(processedString)
+	slug := strings.ReplaceAll(processedString, " ", "-")
+	slug = strings.ToLower(slug)
+	return slug
+}

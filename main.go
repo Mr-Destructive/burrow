@@ -14,8 +14,8 @@ import (
 	"reflect"
 	"strings"
 
-	models "github.com/mr-destructive/ssg/models"
-	"github.com/mr-destructive/ssg/plugins"
+	models "github.com/mr-destructive/burrow/models"
+	"github.com/mr-destructive/burrow/plugins"
 
 	"github.com/yuin/goldmark"
 )

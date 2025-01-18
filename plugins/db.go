@@ -17,11 +17,11 @@ import (
 	"strings"
 	"time"
 
-	libsqlssg "github.com/mr-destructive/ssg/plugins/db/libsqlssg"
+	libsqlssg "github.com/mr-destructive/burrow/plugins/db/libsqlssg"
 	_ "github.com/tursodatabase/libsql-client-go/libsql"
 	"golang.org/x/crypto/bcrypt"
 
-	models "github.com/mr-destructive/ssg/models"
+	models "github.com/mr-destructive/burrow/models"
 )
 
 type DbPlugin struct {

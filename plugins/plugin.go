@@ -3,7 +3,7 @@ package plugins
 import (
 	"reflect"
 
-	"github.com/mr-destructive/ssg/models"
+	"github.com/mr-destructive/burrow/models"
 )
 
 type Plugin interface {

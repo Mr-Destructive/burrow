@@ -10,13 +10,14 @@ import (
 
 	"github.com/aws/aws-lambda-go/events"
 	"github.com/aws/aws-lambda-go/lambda"
-	"github.com/mr-destructive/ssg/plugins"
-	"github.com/mr-destructive/ssg/plugins/db/libsqlssg"
+	"github.com/mr-destructive/burrow/plugins"
+	"github.com/mr-destructive/burrow/plugins/db/libsqlssg"
 	_ "github.com/tursodatabase/libsql-client-go/libsql"
 	"golang.org/x/crypto/bcrypt"
 )
 
 func main() {
+
 	lambda.Start(handler)
 }
 
@@ -59,6 +60,7 @@ func handler(req events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse,
 	if err != nil {
 		return errorResponse(http.StatusInternalServerError, "Database connection failed"), nil
 	}
+
 	return jsonResponse(http.StatusOK, map[string]string{}), nil
 
 }

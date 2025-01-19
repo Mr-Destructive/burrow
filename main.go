@@ -192,6 +192,9 @@ func (c *RenderTemplatesPlugin) Execute(ssg *models.SSG) {
 	// render the templates with the content
 	outputPath := filepath.Join(".", config.Blog.OutputDir)
 	err = os.MkdirAll(outputPath, os.ModePerm)
+	if err != nil {
+		log.Fatal(err)
+	}
 	feedPosts := make(map[string][]models.Post)
 
 	for _, post := range ssg.Posts {
@@ -209,7 +212,12 @@ func (c *RenderTemplatesPlugin) Execute(ssg *models.SSG) {
 			postSlug = strings.ReplaceAll(post.Frontmatter.Title, " ", "-")
 		}
 		post.Frontmatter.Slug = postSlug
-		outputPostPath := filepath.Join(outputPath, postSlug)
+		outputDirPath := filepath.Join(outputPath, postSlug)
+		err = os.MkdirAll(outputDirPath, os.ModePerm)
+		if err != nil {
+			log.Fatal(err)
+		}
+		outputPostPath := filepath.Join(outputDirPath, "index.html")
 		context := models.TemplateContext{
 			Post: post,
 			Themes: models.ThemeCombo{
@@ -377,6 +385,14 @@ func main() {
 		log.Fatal(err)
 	}
 	ssg.Config = config
+	outputPath := ssg.Config.Blog.OutputDir
+	if ssg.Config.Blog.PrefixURL != "" {
+		err := os.MkdirAll(filepath.Join(outputPath, ssg.Config.Blog.PrefixURL), os.ModePerm)
+		if err != nil {
+			log.Fatal(err)
+		}
+		ssg.Config.Blog.OutputDir = filepath.Join(outputPath, ssg.Config.Blog.PrefixURL)
+	}
 
 	// loading in the posts -> post folder
 	// load in the templates

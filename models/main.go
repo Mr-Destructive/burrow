@@ -52,6 +52,7 @@ type BlogConfig struct {
 	OutputDir           string                `json:"output_dir"`
 	DefaultFeedTemplate string                `json:"default_feed_template"`
 	DefaultPostTemplate string                `json:"default_post_template"`
+	PrefixURL           string                `json:"prefix_url"`
 	PagesConfig         map[string]PageConfig `json:"pages"`
 	Themes              map[string]Theme      `json:"themes"`
 }

@@ -96,6 +96,7 @@ type Post struct {
 type Feed struct {
 	Title string
 	Type  string
+    Slug  string
 	Posts []Post
 }
 

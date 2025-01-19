@@ -248,7 +248,8 @@ func (c *RenderTemplatesPlugin) Execute(ssg *models.SSG) {
 	for postType, posts := range feedPosts {
 		feed := models.Feed{
 			Title: postType,
-			Type:  prefixURL + postType,
+			Type:  postType,
+			Slug:  prefixURL + postType,
 			Posts: posts,
 		}
 		feedPostLists = append(feedPostLists, feed)

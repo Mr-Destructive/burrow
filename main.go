@@ -188,6 +188,10 @@ func (c *RenderTemplatesPlugin) Execute(ssg *models.SSG) {
 	if err != nil {
 		log.Fatal(err)
 	}
+	var prefixURL string = ""
+	if config.Blog.PrefixURL != "" {
+		prefixURL = config.Blog.PrefixURL
+	}
 
 	// render the templates with the content
 	outputPath := filepath.Join(".", config.Blog.OutputDir)
@@ -211,7 +215,7 @@ func (c *RenderTemplatesPlugin) Execute(ssg *models.SSG) {
 		if postSlug == "" {
 			postSlug = strings.ReplaceAll(post.Frontmatter.Title, " ", "-")
 		}
-		post.Frontmatter.Slug = postSlug
+		post.Frontmatter.Slug = prefixURL + postSlug
 		outputDirPath := filepath.Join(outputPath, postSlug)
 		err = os.MkdirAll(outputDirPath, os.ModePerm)
 		if err != nil {
@@ -244,7 +248,7 @@ func (c *RenderTemplatesPlugin) Execute(ssg *models.SSG) {
 	for postType, posts := range feedPosts {
 		feed := models.Feed{
 			Title: postType,
-			Type:  postType,
+			Type:  prefixURL + postType,
 			Posts: posts,
 		}
 		feedPostLists = append(feedPostLists, feed)
@@ -385,14 +389,6 @@ func main() {
 		log.Fatal(err)
 	}
 	ssg.Config = config
-	outputPath := ssg.Config.Blog.OutputDir
-	if ssg.Config.Blog.PrefixURL != "" {
-		err := os.MkdirAll(filepath.Join(outputPath, ssg.Config.Blog.PrefixURL), os.ModePerm)
-		if err != nil {
-			log.Fatal(err)
-		}
-		ssg.Config.Blog.OutputDir = filepath.Join(outputPath, ssg.Config.Blog.PrefixURL)
-	}
 
 	// loading in the posts -> post folder
 	// load in the templates

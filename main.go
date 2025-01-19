@@ -357,6 +357,13 @@ func (c *ServerPlugin) Execute(ssg *models.SSG) {
 
 func main() {
 
+	args := os.Args
+	devEnv := false
+	if len(args) > 1 {
+		if args[1] == "dev" {
+			devEnv = true
+		}
+	}
 	// read the config
 	// read all the plugins from config file
 	ssg := models.SSG{}
@@ -410,7 +417,9 @@ func main() {
 	}
 	pluginManager.ExecuteAll(&ssg)
 	pluginManager = PluginManager{}
-	pluginManager.Register(&ServerPlugin{PluginName: "server"})
+	if devEnv {
+		pluginManager.Register(&ServerPlugin{PluginName: "server"})
+	}
 	pluginManager.ExecuteAll(&ssg)
 }
 

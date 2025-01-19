@@ -17,7 +17,6 @@ import (
 )
 
 func main() {
-
 	lambda.Start(handler)
 }
 
@@ -42,11 +41,11 @@ func handler(req events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse,
 	var payload plugins.Payload
 	err = json.Unmarshal([]byte(req.Body), &payload)
 	if err != nil {
-		return errorResponse(http.StatusInternalServerError, "Database connection failed"), nil
+		return errorResponse(http.StatusInternalServerError, "Invalid Payload"), nil
 	}
 	user, err := queries.GetUser(ctx, payload.Username)
 	if err != nil {
-		return errorResponse(http.StatusInternalServerError, "Database connection failed"), nil
+		return errorResponse(http.StatusInternalServerError, "User Not Found"), nil
 	}
 	if !Authenticate(payload.Username, payload.Password, user.Password) {
 		return errorResponse(http.StatusInternalServerError, "Authentication Failed"), nil

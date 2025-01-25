@@ -24,6 +24,17 @@ func main() {
 
 func handler(req events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
 
+	if req.HTTPMethod == "OPTIONS" {
+		return events.APIGatewayProxyResponse{
+			StatusCode: http.StatusOK,
+			Headers: map[string]string{
+				"Access-Control-Allow-Origin":  "*",
+				"Access-Control-Allow-Methods": "POST, OPTIONS",
+				"Access-Control-Allow-Headers": "Content-Type, Authorization",
+			},
+			Body: "",
+		}, nil
+	}
 	ctx := context.Background()
 	dbName := os.Getenv("TURSO_DATABASE_NAME")
 	dbToken := os.Getenv("TURSO_DATABASE_AUTH_TOKEN")
@@ -85,6 +96,19 @@ func handler(req events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse,
 	_, err = queries.CreatePost(ctx, post)
 	if err != nil {
 		return errorResponse(http.StatusInternalServerError, "Database connection failed"), nil
+	}
+
+	if req.Headers["hx-request"] == "true" {
+		return events.APIGatewayProxyResponse{
+			StatusCode: http.StatusOK,
+			Headers: map[string]string{
+				"Content-Type":                 "text/html",
+				"Access-Control-Allow-Origin":  "*",
+				"Access-Control-Allow-Methods": "POST, OPTIONS",
+				"Access-Control-Allow-Headers": "Content-Type, Authorization",
+			},
+			Body: `<div class="success-message">Post created successfully!</div>`,
+		}, nil
 	}
 
 	return jsonResponse(http.StatusOK, post), nil

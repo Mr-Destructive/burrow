@@ -70,6 +70,12 @@ type Payload struct {
 	Metadata map[string]interface{} `json:"metadata"`
 }
 
+type Author struct {
+	Name     string `json:"name"`
+	Username string `json:"username"`
+	Password string `json:"password"`
+}
+
 //go:embed db/schema.sql
 var DDL string
 

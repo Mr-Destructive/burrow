@@ -201,7 +201,7 @@
     <a href="/" class="hover:underline mb-4">Back to Home</a>
     <div class="container mx-auto p-8 rounded-lg shadow-lg max-w-4xl">
         <h1 class="text-3xl font-semibold text-center mb-6">Add Post</h1>
-        <form action="http://localhost:8081/editor" method="POST">
+        <form action="{{ .Config.Blog.CloudFunction.base_url}}/.netlify/functions/api" method="POST">
             <div class="mb-4">
                 <label for="title" class="block text-lg font-medium">Title:</label>
                 <input type="text" name="title" id="title" class="w-full p-2 border rounded-md shadow-sm" required>

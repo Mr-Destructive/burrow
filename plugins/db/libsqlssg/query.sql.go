@@ -11,24 +11,18 @@ import (
 )
 
 const createAuthor = `-- name: CreateAuthor :one
-INSERT INTO authors (username, name, password, is_admin)
-VALUES (?, ?, ?, ?) RETURNING id
+INSERT INTO authors (username, name, password)
+VALUES (?, ?, ?) RETURNING id
 `
 
 type CreateAuthorParams struct {
-	Username string       `json:"username"`
-	Name     string       `json:"name"`
-	Password string       `json:"password"`
-	IsAdmin  sql.NullBool `json:"is_admin"`
+	Username string `json:"username"`
+	Name     string `json:"name"`
+	Password string `json:"password"`
 }
 
 func (q *Queries) CreateAuthor(ctx context.Context, arg CreateAuthorParams) (int64, error) {
-	row := q.db.QueryRowContext(ctx, createAuthor,
-		arg.Username,
-		arg.Name,
-		arg.Password,
-		arg.IsAdmin,
-	)
+	row := q.db.QueryRowContext(ctx, createAuthor, arg.Username, arg.Name, arg.Password)
 	var id int64
 	err := row.Scan(&id)
 	return id, err
@@ -69,6 +63,23 @@ func (q *Queries) CreatePost(ctx context.Context, arg CreatePostParams) (Post, e
 	return i, err
 }
 
+const getAuthorByID = `-- name: GetAuthorByID :one
+SELECT id, username, name, password, is_admin FROM authors WHERE id = ?
+`
+
+func (q *Queries) GetAuthorByID(ctx context.Context, id int64) (Author, error) {
+	row := q.db.QueryRowContext(ctx, getAuthorByID, id)
+	var i Author
+	err := row.Scan(
+		&i.ID,
+		&i.Username,
+		&i.Name,
+		&i.Password,
+		&i.IsAdmin,
+	)
+	return i, err
+}
+
 const getUser = `-- name: GetUser :one
 SELECT id, name, password, is_admin FROM authors WHERE username = ?
 `
@@ -85,6 +96,35 @@ func (q *Queries) GetUser(ctx context.Context, username string) (GetUserRow, err
 	var i GetUserRow
 	err := row.Scan(
 		&i.ID,
+		&i.Name,
+		&i.Password,
+		&i.IsAdmin,
+	)
+	return i, err
+}
+
+const updateAuthor = `-- name: UpdateAuthor :one
+UPDATE authors SET name = ?, password = ?, is_admin = ? WHERE id = ? RETURNING id, username, name, password, is_admin
+`
+
+type UpdateAuthorParams struct {
+	Name     string       `json:"name"`
+	Password string       `json:"password"`
+	IsAdmin  sql.NullBool `json:"is_admin"`
+	ID       int64        `json:"id"`
+}
+
+func (q *Queries) UpdateAuthor(ctx context.Context, arg UpdateAuthorParams) (Author, error) {
+	row := q.db.QueryRowContext(ctx, updateAuthor,
+		arg.Name,
+		arg.Password,
+		arg.IsAdmin,
+		arg.ID,
+	)
+	var i Author
+	err := row.Scan(
+		&i.ID,
+		&i.Username,
 		&i.Name,
 		&i.Password,
 		&i.IsAdmin,

@@ -55,6 +55,9 @@ type BlogConfig struct {
 	PrefixURL           string                `json:"prefix_url"`
 	PagesConfig         map[string]PageConfig `json:"pages"`
 	Themes              map[string]Theme      `json:"themes"`
+    Github              map[string]string     `json:"github"`
+    CloudFunction       map[string]string     `json:"cloud_function"`
+
 }
 
 type SSG_CONFIG struct {

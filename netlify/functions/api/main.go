@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"encoding/json"
 	"fmt"
+	"log"
 	"net/http"
 	"net/url"
 	"os"
@@ -22,6 +23,7 @@ func main() {
 }
 
 func handler(req events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
+
 	ctx := context.Background()
 	dbName := os.Getenv("TURSO_DATABASE_NAME")
 	dbToken := os.Getenv("TURSO_DATABASE_AUTH_TOKEN")
@@ -40,6 +42,7 @@ func handler(req events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse,
 	}
 
 	var payload plugins.Payload
+	log.Printf("Headers: %v", req.Headers)
 	if req.Headers["hx-request"] == "true" {
 		formData, err := url.ParseQuery(req.Body)
 		if err != nil {
@@ -63,7 +66,9 @@ func handler(req events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse,
 			return errorResponse(http.StatusInternalServerError, "Invalid Payload"), nil
 		}
 	}
+	log.Printf("Payload: %v", payload)
 	user, err := queries.GetUser(ctx, payload.Username)
+	log.Printf("User: %v", user)
 	if err != nil {
 		return errorResponse(http.StatusInternalServerError, "User Not Found"), nil
 	}
@@ -80,8 +85,7 @@ func handler(req events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse,
 		return errorResponse(http.StatusInternalServerError, "Database connection failed"), nil
 	}
 
-	return jsonResponse(http.StatusOK, map[string]string{}), nil
-
+	return jsonResponse(http.StatusOK, post), nil
 }
 
 func Authenticate(username, rawPassword, hashedPassword string) bool {

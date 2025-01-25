@@ -40,7 +40,7 @@ func handler(req events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse,
 	}
 
 	var payload plugins.Payload
-	if req.Headers["htmx-request"] == "true" {
+	if req.Headers["hx-request"] == "true" {
 		formData, err := url.ParseQuery(req.Body)
 		if err != nil {
 			return errorResponse(http.StatusInternalServerError, "Invalid form Payload"), nil

@@ -51,12 +51,12 @@ func handler(req events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse,
 		}
 		payload.Password = string(hashedPassword)
 		userID, err := queries.CreateAuthor(ctx, payload)
+		if err != nil {
+			return errorResponse(http.StatusInternalServerError, "User creation failed"), nil
+		}
 		user, err := queries.GetAuthorByID(ctx, userID)
 		if err != nil {
 			return errorResponse(http.StatusInternalServerError, "User Not Found"), nil
-		}
-		if !Authenticate(payload.Username, payload.Password, user.Password) {
-			return errorResponse(http.StatusInternalServerError, "Authentication Failed"), nil
 		}
 		return jsonResponse(http.StatusOK, map[string]string{
 			"username": user.Username,

@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"net/url"
 	"os"
 
 	"github.com/aws/aws-lambda-go/events"
@@ -39,9 +40,28 @@ func handler(req events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse,
 	}
 
 	var payload plugins.Payload
-	err = json.Unmarshal([]byte(req.Body), &payload)
-	if err != nil {
-		return errorResponse(http.StatusInternalServerError, "Invalid Payload"), nil
+	if req.Headers["htmx-request"] == "true" {
+		formData, err := url.ParseQuery(req.Body)
+		if err != nil {
+			return errorResponse(http.StatusInternalServerError, "Invalid Payload"), nil
+		}
+		metadata := make(map[string]interface{})
+		err = json.Unmarshal([]byte(formData.Get("metadata")), &metadata)
+		if err != nil {
+			return errorResponse(http.StatusInternalServerError, "Invalid Payload"), nil
+		}
+		payload = plugins.Payload{
+			Username: formData.Get("username"),
+			Password: formData.Get("password"),
+			Title:    formData.Get("title"),
+			Post:     formData.Get("content"),
+			Metadata: metadata,
+		}
+	} else {
+		err = json.Unmarshal([]byte(req.Body), &payload)
+		if err != nil {
+			return errorResponse(http.StatusInternalServerError, "Invalid Payload"), nil
+		}
 	}
 	user, err := queries.GetUser(ctx, payload.Username)
 	if err != nil {

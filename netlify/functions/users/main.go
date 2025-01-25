@@ -45,6 +45,11 @@ func handler(req events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse,
 		if err != nil {
 			return errorResponse(http.StatusInternalServerError, "Invalid Payload"), nil
 		}
+		hashedPassword, err := bcrypt.GenerateFromPassword([]byte(payload.Password), bcrypt.DefaultCost)
+		if err != nil {
+			return errorResponse(http.StatusInternalServerError, "Invalid Payload"), nil
+		}
+		payload.Password = string(hashedPassword)
 		userID, err := queries.CreateAuthor(ctx, payload)
 		user, err := queries.GetAuthorByID(ctx, userID)
 		if err != nil {

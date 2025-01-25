@@ -194,11 +194,11 @@
             border: 1px solid var(--secondary-text-color);
         }
     </style>
-    <script src="/theme.js"></script>
+    <script src="../theme.js"></script>
 </head>
 <body class="">
     <button id="theme-toggle" class="p-2 rounded-md shadow-lg ">Toggle Theme</button>
-    <a href="/" class="hover:underline mb-4">Back to Home</a>
+    <a href="/{{ .Config.Blog.PrefixURL }}" class="hover:underline mb-4">Back to Home</a>
     <div class="container mx-auto p-8 rounded-lg shadow-lg max-w-4xl">
         <h1 class="text-3xl font-semibold text-center mb-6">Add Post</h1>
         <form action="{{ .Config.Blog.CloudFunction.base_url}}/.netlify/functions/api" method="POST">

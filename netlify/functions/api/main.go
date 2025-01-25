@@ -43,6 +43,7 @@ func handler(req events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse,
 
 	var payload plugins.Payload
 	log.Printf("Headers: %v", req.Headers)
+	log.Printf("hx-request??? %v", req.Headers["hx-request"])
 	if req.Headers["hx-request"] == "true" {
 		formData, err := url.ParseQuery(req.Body)
 		if err != nil {
@@ -72,11 +73,12 @@ func handler(req events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse,
 	if err != nil {
 		return errorResponse(http.StatusInternalServerError, "User Not Found"), nil
 	}
-	if !Authenticate(payload.Username, payload.Password, user.Password) {
+	if !Authenticate(payload.Username, user.Password, payload.Password) {
 		return errorResponse(http.StatusInternalServerError, "Authentication Failed"), nil
 	}
 
 	post, err := plugins.CreatePostPayload(payload, int(user.ID), user.Name)
+	log.Printf("Post: %v", post)
 	if err != nil {
 		return errorResponse(http.StatusInternalServerError, "Database connection failed"), nil
 	}
@@ -88,8 +90,8 @@ func handler(req events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse,
 	return jsonResponse(http.StatusOK, post), nil
 }
 
-func Authenticate(username, rawPassword, hashedPassword string) bool {
-	err := bcrypt.CompareHashAndPassword([]byte(rawPassword), []byte(hashedPassword))
+func Authenticate(username, hashedPassword, rawPassword string) bool {
+	err := bcrypt.CompareHashAndPassword([]byte(hashedPassword), []byte(rawPassword))
 	fmt.Println(err)
 	if err != nil {
 		fmt.Println("Authentication Failure")

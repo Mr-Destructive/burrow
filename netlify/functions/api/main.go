@@ -43,12 +43,12 @@ func handler(req events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse,
 	if req.Headers["htmx-request"] == "true" {
 		formData, err := url.ParseQuery(req.Body)
 		if err != nil {
-			return errorResponse(http.StatusInternalServerError, "Invalid Payload"), nil
+			return errorResponse(http.StatusInternalServerError, "Invalid form Payload"), nil
 		}
 		metadata := make(map[string]interface{})
 		err = json.Unmarshal([]byte(formData.Get("metadata")), &metadata)
 		if err != nil {
-			return errorResponse(http.StatusInternalServerError, "Invalid Payload"), nil
+			return errorResponse(http.StatusInternalServerError, "Invalid metadata Payload"), nil
 		}
 		payload = plugins.Payload{
 			Username: formData.Get("username"),

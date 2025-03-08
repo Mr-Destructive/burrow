@@ -13,8 +13,8 @@ import (
 
 func main() {
 
-	dbURL := os.Getenv("TURSO_DATABASE_URL")
-	dbAuthToken := os.Getenv("TURSO_DATABASE_TOKEN")
+	dbURL := os.Getenv("TURSO_DATABASE_NAME")
+	dbAuthToken := os.Getenv("TURSO_DATABASE_AUTH_TOKEN")
 	dbUrl := fmt.Sprintf("%s?authToken=%s", dbURL, dbAuthToken)
 
 	db, err := sql.Open("libsql", dbUrl)

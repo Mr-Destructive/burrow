@@ -14,7 +14,8 @@ import (
 func main() {
 
 	dbURL := os.Getenv("TURSO_DATABASE_URL")
-	dbUrl := fmt.Sprintf("%s", dbURL)
+	dbAuthToken := os.Getenv("TURSO_DATABASE_TOKEN")
+	dbUrl := fmt.Sprintf("%s?authToken=%s", dbURL, dbAuthToken)
 
 	db, err := sql.Open("libsql", dbUrl)
 	if err != nil {

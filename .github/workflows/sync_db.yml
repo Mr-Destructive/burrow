@@ -27,6 +27,7 @@ jobs:
       - name: Build and run
         env:
           TURSO_DATABASE_URL: ${{ secrets.TURSO_DATABASE_URL }}
+          TURSO_DATABASE_TOKEN: ${{ secrets.TURSO_DATABASE_TOKEN }}
         run: |
           # Build and run the application
           go run sync_db.go

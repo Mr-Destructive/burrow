@@ -1,0 +1,48 @@
+name: Hourly DB Export
+
+on:
+  schedule:
+    # Run every hour
+    - cron: '0 * * * *'
+  workflow_dispatch:  # Allows manual triggering
+
+jobs:
+  export-db-data:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+      
+      - name: Set up Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: '1.21'  # Specify the Go version you need
+      
+      - name: Install dependencies
+        run: |
+          go mod tidy
+          go get github.com/tursodatabase/libsql-client-go/libsql
+      
+      - name: Build and run
+        env:
+          TURSO_DATABASE_URL: ${{ secrets.TURSO_DATABASE_URL }}
+        run: |
+          # Build and run the application
+          go run sync_db.go
+      
+      - name: Commit and push if changes exist
+        run: |
+          git config --local user.email "github-actions@github.com"
+          git config --local user.name "GitHub Actions"
+          
+          # Add any new files that might have been created
+          git add posts/
+          
+          # Check if there are any changes to commit
+          if git diff --staged --quiet; then
+            echo "No changes to commit"
+          else
+            git commit -m "Auto-export posts from database [skip ci]"
+            git push
+          fi

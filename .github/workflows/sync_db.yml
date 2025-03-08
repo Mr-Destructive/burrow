@@ -2,9 +2,8 @@ name: Hourly DB Export
 
 on:
   schedule:
-    # Run every hour
-    - cron: '5 * * * *'
-  workflow_dispatch:  # Allows manual triggering
+    - cron: '*/5 * * * *'
+  workflow_dispatch:
 
 jobs:
   export-db-data:

@@ -23,9 +23,9 @@ func main() {
 		os.Exit(1)
 	}
 	defer db.Close()
-	oneDayBackTime := time.Now().AddDate(0, 0, -1)
+	onehourBackTime := time.Now().Add(time.Hour * -1).Format("2006-01-02 15:04:05")
 
-	query := fmt.Sprintf("SELECT * FROM posts WHERE created_at > '%s';", oneDayBackTime)
+	query := fmt.Sprintf("SELECT * FROM posts WHERE created_at > '%s';", onehourBackTime)
 
 	rows, err := db.Query(query)
 	if err != nil {

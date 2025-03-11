@@ -149,9 +149,12 @@ func CreatePostPayload(payload Payload, authorId int, authorName string) (libsql
 
 	nilPost := libsqlssg.CreatePostParams{}
 	metadata := payload.Metadata
+	log.Printf("Recieved payload metadata: %+v", payload.Metadata)
 	content := payload.Post
-	if val, ok := metadata["title"]; !ok || val == nil {
+	if payload.Title == "" {
 		return nilPost, fmt.Errorf("Post must contain a title")
+	} else {
+		metadata["title"] = payload.Title
 	}
 	title := metadata["title"].(string)
 	var slug string
@@ -161,23 +164,30 @@ func CreatePostPayload(payload Payload, authorId int, authorName string) (libsql
 		slug = Slugify(title)
 	}
 
-	var postType string = "post"
-	if postType, ok := metadata["type"]; ok {
-		postType = postType.(string)
+	var postType string
+	if val, ok := metadata["type"]; ok {
+		postType = val.(string)
+	} else {
+		postType = "post"
 	}
-	var postDir string = "posts"
-	if postDir, ok := metadata["dir"]; ok {
-		postDir = postDir.(string)
+	var postDir string
+	if val, ok := metadata["post_dir"]; ok {
+		postDir = val.(string)
+	} else {
+		postDir = "posts"
 	}
-	var status string = "draft"
-	if status, ok := metadata["published"]; ok {
-		status = status.(string)
+	var status string
+	if val, ok := metadata["published"]; ok {
+		status = val.(string)
+	} else {
+		status = "published"
 	}
 	metadata["type"] = postType
 	metadata["published"] = status
 	metadata["author"] = authorName
 	metadata["date"] = time.Now().Format("2006-01-02")
 	metadata["post_dir"] = postDir
+	log.Printf("final metadata: %+v", metadata)
 	metadataStr, err := json.Marshal(metadata)
 	if err != nil {
 		return nilPost, err

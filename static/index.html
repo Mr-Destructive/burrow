@@ -3,7 +3,7 @@
 
 <head>
     <title>Techstructive Blog</title>
-    <link rel="stylesheet" type="text/css" href="../style.css">
+    <link rel="stylesheet" type="text/css" href="style.css">
     <style>
             :root {
                 --bg-color: {{ .Themes.Default.Bg }};
@@ -193,13 +193,13 @@
             margin-right: 5px; /* Space between icon and text */
         }
     </style>
-    <script src="../theme.js"></script>
+    <script src="theme.js"></script>
 </head>
 
 <body>
     <h1>Techstructive Blog</h1>
     <button id="theme-toggle" aria-label="Theme">Theme</button>
-    <button id="editor" onclick="location.href='/{{.Config.Blog.PrefixURL}}/editor'">
+    <button id="editor" onclick="location.href='{{.Config.Blog.PrefixURL}}/editor'">
         <i class="fas fa-edit"></i> Editor
     </button>
     <ul>

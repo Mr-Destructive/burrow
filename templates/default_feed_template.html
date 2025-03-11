@@ -185,7 +185,7 @@
         <ul>
             {{ range .FeedInfo.Posts }}
             <li>
-                <a href="/{{.Config.Blog.PrefixURL}}{{ .Frontmatter.Slug }}">{{ .Frontmatter.Title }}</a>
+                <a href="/{{$.Config.Blog.PrefixURL}}{{ .Frontmatter.Slug }}">{{ .Frontmatter.Title }}</a>
             </li>
             {{ end }}
         </ul>

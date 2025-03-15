@@ -1,5 +1,5 @@
 ---
-type: til
+type: tils
 title: "SQLite importing CSV with custom separator"
 description: "Explorng SQLite CLI with inline CSV import command with custom separator"
 status: published

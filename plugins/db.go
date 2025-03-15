@@ -215,7 +215,7 @@ func Slugify(input string) string {
 	return slug
 }
 
-func CleanPostFrontmatter(post *models.Post) {
+func CleanPostFrontmatter(post *models.Post, ssg *models.SSG) {
 	if post.Frontmatter.Type == "" {
 		post.Frontmatter.Type = "posts"
 	}
@@ -231,7 +231,7 @@ func CleanPostFrontmatter(post *models.Post) {
 			post.Frontmatter.Slug = Slugify(post.Frontmatter.Title)
 		}
 	}
-	post.Frontmatter.Slug = fmt.Sprintf("%s/%s", post.Frontmatter.Type, post.Frontmatter.Slug)
+	post.Frontmatter.Slug = fmt.Sprintf("%s%s/%s", ssg.Config.Blog.PrefixURL, post.Frontmatter.Type, post.Frontmatter.Slug)
 }
 
 func init() {

@@ -16,6 +16,7 @@ type Author struct {
 type PageConfig struct {
 	TemplatePath     string `json:"template"`
 	FeedTemplatePath string `json:"feed_template"`
+	Emoji            string `json:"emoji"`
 }
 
 type Theme struct {
@@ -68,13 +69,14 @@ type SSG_CONFIG struct {
 var config *SSG_CONFIG
 
 type FrontMatter struct {
-	Title       string   `json:"title" yaml:"title"`
-	Description string   `json:"description" yaml:"description"`
-	Status      string   `json:"status" yaml:"status"`
-	Type        string   `json:"type" yaml:"type"`
-	Date        string   `json:"date" yaml:"date"`
-	Slug        string   `json:"slug" yaml:"slug"`
-	Tags        []string `json:"tags" yaml:"tags"`
+	Title       string                 `json:"title" yaml:"title"`
+	Description string                 `json:"description" yaml:"description"`
+	Status      string                 `json:"status" yaml:"status"`
+	Type        string                 `json:"type" yaml:"type"`
+	Date        string                 `json:"date" yaml:"date"`
+	Slug        string                 `json:"slug" yaml:"slug"`
+	Tags        []string               `json:"tags" yaml:"tags"`
+	Extras      map[string]interface{} `json:",inline" yaml:",inline"`
 }
 
 type PostType int

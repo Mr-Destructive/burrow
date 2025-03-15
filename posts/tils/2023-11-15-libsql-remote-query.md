@@ -1,5 +1,5 @@
 ---
-type: til
+type: tils
 title: "LibSQL: Query a remote Turso database with cURL"
 description: "Querying a libsql database hosted on turso with cURL. Using a remote sqlite-like db with turso api to query data."
 status: published

@@ -1,5 +1,5 @@
 ---
-type: til
+type: tils
 title: "Turn Python dictionary into a neat CSV table"
 description: "Exploring how to write python dict/key-value pairs and a table-like structure to a CSV file."
 status: published

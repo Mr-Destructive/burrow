@@ -10,9 +10,28 @@
         "default_post_template": "default_post_template.html",
         "prefix_url": "burrow/",
         "pages": {
-            "post": {
+            "posts": {
                 "template": "default_post_template.html",
-                "feed_template": "default_feed_template.html"
+                "feed_template": "default_feed_template.html",
+                "emoji": "📝"
+            },
+            "links": {
+                "emoji": "🔗"
+            },
+            "newsletter": {
+                "emoji": "📩"
+            },
+            "projects": {
+                "emoji": "🔧"
+            },
+            "tils": {
+                "emoji": "⚡"
+            },
+            "thoughts": {
+                "emoji": "💭"
+            },
+            "work":{
+                "emoji": "💼"
             }
         },
         "themes": {
@@ -27,11 +46,11 @@
                 },
                 "quotes": "#999999",
                 "codeblocks": {
-                  "bg": "#f8f9fa",
+                  "bg": "#dddddd",
                   "border": "#ced4da"
                 },
                 "code": {
-                  "text": "#000000",
+                  "text": "#444444",
                   "comment": "#808080",
                   "keyword": "#008000",
                   "string": "#000080",
@@ -89,6 +108,7 @@
         "copyStaticFiles",
         "Db",
         "Tags",
+        "Series",
         "index",
         "server"
     ]

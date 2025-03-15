@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <title>{{ .FeedInfo.Type }}</title>
+        <title>{{ .FeedInfo.Title }}</title>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>{{ .Post.Frontmatter.Title }}</title>
@@ -177,13 +177,34 @@
                 background-color: var(--link-hover);
             }
         </style>
-        <script src="../theme.js"></script>
-        <script src="../../theme.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const themeToggle = document.getElementById('theme-toggle');
+            const body = document.body;
+
+            const currentTheme = localStorage.getItem('theme') || 'light';
+
+            if (currentTheme === 'secondary') {
+                body.classList.add('secondary-theme');
+            }
+
+            themeToggle.addEventListener('click', () => {
+                if (body.classList.contains('secondary-theme')) {
+                    body.classList.remove('secondary-theme');
+                    localStorage.setItem('theme', 'light');
+                } else {
+                    body.classList.add('secondary-theme');
+                    localStorage.setItem('theme', 'secondary');
+                }
+            });
+        });
+    </script>
     </head>
     <body>
         <h1 class="site-title"><a href="/{{ .Config.Blog.PrefixURL }}">{{ .Config.Blog.Name }}</a></h1>
         <button id="theme-toggle" aria-label="Theme">Theme</button>
-        <h1>{{ .FeedInfo.Type }}</h1>
+        <h1>{{ .FeedInfo.Title }}</h1>
+        <p>Total Posts: {{ len .FeedInfo.Posts }}</p>
         <ul>
             {{ range .FeedInfo.Posts }}
             <li>

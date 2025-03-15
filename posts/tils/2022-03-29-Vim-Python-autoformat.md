@@ -1,5 +1,5 @@
 ---
-type: "til"
+type: "tils"
 title: "Autoformat Python file with Black after saving in Vim"
 description: "Automatically format python code in the current file after saving the file in Vim."
 date: 2022-03-29 20:40:53

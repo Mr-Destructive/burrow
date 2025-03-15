@@ -1,5 +1,5 @@
 ---
-type: til
+type: tils
 title: "Read a Rss Feed with a URL in Golang"
 description: "Reading Rss Feed with a Rss XML Link/URL in golang using encoding package"
 status: published

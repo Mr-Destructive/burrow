@@ -11,36 +11,48 @@ import (
 	"github.com/mr-destructive/burrow/models"
 )
 
-type TagsPlugin struct {
+type SeriesPlugin struct {
 	PluginName string
 }
 
-func (p *TagsPlugin) Name() string {
+func (p *SeriesPlugin) Name() string {
 	return p.PluginName
 }
 
-func (p *TagsPlugin) Execute(ssg *models.SSG) {
+func (p *SeriesPlugin) Execute(ssg *models.SSG) {
 	config := &ssg.Config
-	tagPosts := make(map[string][]models.Post)
+	seriesPost := make(map[string][]models.Post)
 	for _, post := range ssg.Posts {
 		if post.Frontmatter.Status == "draft" {
 			continue
 		}
 		CleanPostFrontmatter(&post, ssg)
-		for _, tag := range post.Frontmatter.Tags {
-			tagPosts[tag] = append(tagPosts[tag], post)
+		if post.Frontmatter.Extras == nil {
+			continue
+		}
+		fmt.Println("series", post.Frontmatter.Extras)
+		if post.Frontmatter.Extras["series"] == nil {
+			continue
+		}
+		seriesList := post.Frontmatter.Extras["series"].([]interface{})
+		for _, series := range seriesList {
+			series := Slugify(series.(string))
+			seriesPost[series] = append(seriesPost[series], post)
 		}
 	}
-	for tag, posts := range tagPosts {
+	fmt.Println("seriesPost", len(seriesPost))
+
+	for series, posts := range seriesPost {
 		buffer := bytes.Buffer{}
-		templatePath := config.Blog.PagesConfig["tags"].TemplatePath
+		fmt.Println("series", series, len(posts))
+		templatePath := config.Blog.PagesConfig["series"].TemplatePath
 		if templatePath == "" {
 			templatePath = config.Blog.DefaultFeedTemplate
 		}
 		feed := models.Feed{
-			Title: tag,
-			Type:  tag,
-			Slug:  ssg.Config.Blog.PrefixURL + "tags/" + tag,
+			Title: series,
+			Type:  series,
+			Slug:  ssg.Config.Blog.PrefixURL + "series/" + series,
 			Posts: posts,
 		}
 
@@ -59,15 +71,16 @@ func (p *TagsPlugin) Execute(ssg *models.SSG) {
 		if err != nil {
 			log.Fatal(err)
 		}
-		feedPath := filepath.Join(".", config.Blog.OutputDir, ssg.Config.Blog.PrefixURL, "tags", feed.Type)
+		feedPath := filepath.Join(".", config.Blog.OutputDir, ssg.Config.Blog.PrefixURL, "series", feed.Type)
 		err = os.MkdirAll(feedPath, os.ModePerm)
+		fmt.Println("seriesssss", feed.Type)
 		outputFeedPath := fmt.Sprintf("%s/index.html", feedPath)
 		err = os.WriteFile(outputFeedPath, buffer.Bytes(), 0660)
 	}
 }
 
 func init() {
-	RegisterPlugin("Tags", reflect.TypeOf(TagsPlugin{
-		PluginName: "Tags",
+	RegisterPlugin("Series", reflect.TypeOf(SeriesPlugin{
+		PluginName: "Series",
 	}))
 }

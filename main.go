@@ -53,47 +53,94 @@ func ReadFiles(files []string) ([][]byte, error) {
 
 func ReadPosts(files []string) ([]models.Post, error) {
 	var posts []models.Post
+
+	// Read file contents
 	filesBytes, err := ReadFiles(files)
 	if err != nil {
-		return posts, err
+		return nil, err
 	}
-	for _, fileBytes := range filesBytes {
-		frontmatterSeparator := []byte("}\n\n")
-		index := strings.Index(string(fileBytes), string(frontmatterSeparator))
-		frontmatterBytes := fileBytes[:index+len(frontmatterSeparator)]
-		contentBytes := fileBytes[index+len(frontmatterSeparator):]
-		var frontmatterObj models.FrontMatter
 
-		err = json.Unmarshal(frontmatterBytes, &frontmatterObj)
-		if err != nil {
-			frontmatterSeparator = []byte("---\n\n")
-			index = strings.Index(string(fileBytes), string(frontmatterSeparator))
-			if index == -1 {
+	// Iterate through files
+	for _, fileBytes := range filesBytes {
+		var success bool
+		var frontmatterObj models.FrontMatter
+		var contentBytes []byte
+		var requiredFields []string = []string{"title", "description", "status", "type", "date", "slug", "tags"}
+
+		// Attempt to detect JSON front matter
+		jsonSeparator := []byte("}\n\n")
+		jsonIndex := strings.Index(string(fileBytes), string(jsonSeparator))
+
+		if jsonIndex != -1 {
+			frontmatterBytes := fileBytes[:jsonIndex+1] // Keep closing brace
+			contentBytes = fileBytes[jsonIndex+2:]      // Skip the separator
+
+			// Unmarshal into a temporary map to capture extra fields
+			tempMap := make(map[string]interface{})
+			if err := json.Unmarshal(frontmatterBytes, &tempMap); err == nil {
+				success = true
+
+				// Extract known fields into the struct
+				if err := json.Unmarshal(frontmatterBytes, &frontmatterObj); err != nil {
+					log.Printf("Error parsing JSON front matter: %v", err)
+					continue
+				}
+
+				// Remove known keys and store the rest in Extras
+				for _, key := range requiredFields {
+					delete(tempMap, key)
+				}
+				frontmatterObj.Extras = tempMap
+			}
+		}
+
+		// Attempt to detect YAML front matter
+		if !success {
+			yamlSeparator := []byte("---\n\n")
+			yamlIndex := strings.Index(string(fileBytes), string(yamlSeparator))
+
+			if yamlIndex != -1 {
+				frontmatterBytes := fileBytes[:yamlIndex]
+				contentBytes = fileBytes[yamlIndex+len(yamlSeparator):]
+
+				// Unmarshal into a temporary map to capture extra fields
+				tempMap := make(map[string]interface{})
+				if err := yaml.Unmarshal(frontmatterBytes, &tempMap); err == nil {
+
+					// Extract known fields into the struct
+					if err := yaml.Unmarshal(frontmatterBytes, &frontmatterObj); err != nil {
+						log.Printf("Error parsing YAML front matter: %v", err)
+						continue
+					}
+
+					// Remove known keys and store the rest in Extras
+					for _, key := range requiredFields {
+						delete(tempMap, key)
+					}
+					frontmatterObj.Extras = tempMap
+				} else {
+					log.Printf("Error parsing YAML front matter: %v", err)
+					continue
+				}
+			} else {
+				log.Printf("No valid front matter found in file")
 				continue
 			}
-			frontmatterBytes = fileBytes[:index+len(frontmatterSeparator)]
-			contentBytes = fileBytes[index+len(frontmatterSeparator):]
-			err = yaml.Unmarshal(frontmatterBytes, &frontmatterObj)
-			fmt.Println("Yaml", frontmatterObj)
-			if err != nil {
-				log.Fatal(err)
-			}
 		}
-		bytesBuffer := bytes.Buffer{}
-		err := goldmark.Convert(contentBytes, &bytesBuffer)
-		if err != nil {
-			log.Fatal(err)
+		// Convert Markdown to HTML
+		var contentBuffer bytes.Buffer
+		if err := goldmark.Convert(contentBytes, &contentBuffer); err != nil {
+			log.Printf("Error processing Markdown: %v", err)
+			continue
 		}
-		post := models.Post{
+
+		// Append post
+		posts = append(posts, models.Post{
 			Frontmatter: frontmatterObj,
-			Content:     template.HTML(bytesBuffer.String()),
-		}
-		fmt.Println("Post", post.Frontmatter.Type)
-		if post.Frontmatter.Type == "til" {
-			fmt.Println("TTTTTT", post.Frontmatter)
-		}
-		posts = append(posts, post)
+			Content:     template.HTML(contentBuffer.String()),
+		})
 	}
+
 	return posts, nil
 }
 
@@ -186,7 +233,7 @@ func (c *PostReaderPlugin) Execute(ssg *models.SSG) {
 		if post.Frontmatter.Status == "draft" {
 			continue
 		}
-		plugins.CleanPostFrontmatter(&post)
+		plugins.CleanPostFrontmatter(&post, ssg)
 	}
 	ssg.Posts = postsList
 }
@@ -226,9 +273,8 @@ func (c *RenderTemplatesPlugin) Execute(ssg *models.SSG) {
 			continue
 		}
 		postType := post.Frontmatter.Type
-		fmt.Println(postType, post.Frontmatter.Title)
 		if postType == "" {
-			postType = "post"
+			postType = "posts"
 		}
 		templatePath := config.Blog.PagesConfig[postType].TemplatePath
 		if templatePath == "" {
@@ -239,7 +285,6 @@ func (c *RenderTemplatesPlugin) Execute(ssg *models.SSG) {
 		if postSlug == "" {
 			postSlug = plugins.Slugify(post.Frontmatter.Title)
 		}
-		fmt.Println("postSlug", postSlug)
 		post.Frontmatter.Slug = prefixURL + postType + "/" + postSlug
 		postPath := filepath.Join(outputPath, postType, postSlug)
 		//outputDirPath := filepath.Join(postPath, postSlug)
@@ -250,10 +295,23 @@ func (c *RenderTemplatesPlugin) Execute(ssg *models.SSG) {
 		outputPostPath := filepath.Join(postPath, "index.html")
 		//sort post by date
 		sort.Slice(ssg.Posts, func(i, j int) bool {
-			date1, _ := time.Parse("2006-01-02", ssg.Posts[i].Frontmatter.Date)
-			date2, _ := time.Parse("2006-01-02", ssg.Posts[j].Frontmatter.Date)
+			// Ensure correct parsing and handle errors
+			date1, err1 := time.Parse("2006-01-02", ssg.Posts[i].Frontmatter.Date)
+			date2, err2 := time.Parse("2006-01-02", ssg.Posts[j].Frontmatter.Date)
+
+			if err1 != nil {
+				date1 = time.Time{}
+			}
+			if err2 != nil {
+				date2 = time.Time{}
+			}
+
 			return date2.Before(date1)
 		})
+
+		for i := range ssg.Posts {
+			ssg.Posts[i].Frontmatter.Date = ssg.Posts[i].Frontmatter.Date[:10] // Truncate in case of time component
+		}
 		context := models.TemplateContext{
 			Post: post,
 			Themes: models.ThemeCombo{
@@ -277,8 +335,9 @@ func (c *RenderTemplatesPlugin) Execute(ssg *models.SSG) {
 	}
 	feedPostLists := []models.Feed{}
 	for postType, posts := range feedPosts {
+		fmt.Println(config.Blog.PagesConfig[postType].Emoji)
 		feed := models.Feed{
-			Title: postType,
+			Title: strings.ToTitle(postType) + " " + config.Blog.PagesConfig[postType].Emoji,
 			Type:  postType,
 			Slug:  prefixURL + postType,
 			Posts: posts,

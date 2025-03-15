@@ -55,9 +55,8 @@ type BlogConfig struct {
 	PrefixURL           string                `json:"prefix_url"`
 	PagesConfig         map[string]PageConfig `json:"pages"`
 	Themes              map[string]Theme      `json:"themes"`
-    Github              map[string]string     `json:"github"`
-    CloudFunction       map[string]string     `json:"cloud_function"`
-
+	Github              map[string]string     `json:"github"`
+	CloudFunction       map[string]string     `json:"cloud_function"`
 }
 
 type SSG_CONFIG struct {
@@ -69,12 +68,13 @@ type SSG_CONFIG struct {
 var config *SSG_CONFIG
 
 type FrontMatter struct {
-	Title       string `json:"title"`
-	Description string `json:"description"`
-	Status      string `json:"status"`
-	Type        string `json:"type"`
-	Date        string `json:"date"`
-	Slug        string `json:"slug"`
+	Title       string   `json:"title" yaml:"title"`
+	Description string   `json:"description" yaml:"description"`
+	Status      string   `json:"status" yaml:"status"`
+	Type        string   `json:"type" yaml:"type"`
+	Date        string   `json:"date" yaml:"date"`
+	Slug        string   `json:"slug" yaml:"slug"`
+	Tags        []string `json:"tags" yaml:"tags"`
 }
 
 type PostType int
@@ -99,7 +99,7 @@ type Post struct {
 type Feed struct {
 	Title string
 	Type  string
-    Slug  string
+	Slug  string
 	Posts []Post
 }
 

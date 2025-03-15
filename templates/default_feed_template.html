@@ -178,8 +178,10 @@
             }
         </style>
         <script src="../theme.js"></script>
+        <script src="../../theme.js"></script>
     </head>
     <body>
+        <h1 class="site-title"><a href="/{{ .Config.Blog.PrefixURL }}">{{ .Config.Blog.Name }}</a></h1>
         <button id="theme-toggle" aria-label="Theme">Theme</button>
         <h1>{{ .FeedInfo.Type }}</h1>
         <ul>

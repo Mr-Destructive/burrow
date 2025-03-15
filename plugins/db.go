@@ -215,6 +215,25 @@ func Slugify(input string) string {
 	return slug
 }
 
+func CleanPostFrontmatter(post *models.Post) {
+	if post.Frontmatter.Type == "" {
+		post.Frontmatter.Type = "posts"
+	}
+
+	if post.Frontmatter.Slug == "" || post.Frontmatter.Title == "" {
+		if post.Frontmatter.Title == "" {
+			if post.Frontmatter.Description == "" {
+				post.Frontmatter.Description = string(post.Content)[:15]
+			}
+			post.Frontmatter.Title = post.Frontmatter.Description
+			post.Frontmatter.Title = string(post.Frontmatter.Description)[:15]
+		} else if post.Frontmatter.Slug == "" {
+			post.Frontmatter.Slug = Slugify(post.Frontmatter.Title)
+		}
+	}
+	post.Frontmatter.Slug = fmt.Sprintf("%s/%s", post.Frontmatter.Type, post.Frontmatter.Slug)
+}
+
 func init() {
 	RegisterPlugin("Db", reflect.TypeOf(DbPlugin{
 		PluginName: "Db",

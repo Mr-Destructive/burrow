@@ -6,35 +6,37 @@ import (
 	"fmt"
 	"html/template"
 	"io"
-	"io/fs"
 	"log"
 	"net/http"
 	"os"
 	"path/filepath"
 	"reflect"
+	"sort"
 	"strings"
+	"time"
 
 	models "github.com/mr-destructive/burrow/models"
 	"github.com/mr-destructive/burrow/plugins"
+	"gopkg.in/yaml.v3"
 
 	"github.com/yuin/goldmark"
 )
 
 func WalkAndListFiles(dirPath string) ([]string, error) {
 	var files []string
-	err := filepath.WalkDir(dirPath, func(path string, d fs.DirEntry, err error) error {
-		dir_name := filepath.Base(dirPath)
-		if d.IsDir() && d.Name() != dir_name {
-			return filepath.SkipDir
-		} else {
-			files = append(files, path)
-			return nil
+	err := filepath.WalkDir(dirPath, func(path string, d os.DirEntry, err error) error {
+		if err != nil {
+			return err
 		}
+		if !d.IsDir() {
+			files = append(files, path)
+		}
+		return nil
 	})
 	if err != nil {
 		return files, err
 	}
-	return files[1:], nil
+	return files, nil
 }
 
 func ReadFiles(files []string) ([][]byte, error) {
@@ -64,7 +66,18 @@ func ReadPosts(files []string) ([]models.Post, error) {
 
 		err = json.Unmarshal(frontmatterBytes, &frontmatterObj)
 		if err != nil {
-			log.Fatal(err)
+			frontmatterSeparator = []byte("---\n\n")
+			index = strings.Index(string(fileBytes), string(frontmatterSeparator))
+			if index == -1 {
+				continue
+			}
+			frontmatterBytes = fileBytes[:index+len(frontmatterSeparator)]
+			contentBytes = fileBytes[index+len(frontmatterSeparator):]
+			err = yaml.Unmarshal(frontmatterBytes, &frontmatterObj)
+			fmt.Println("Yaml", frontmatterObj)
+			if err != nil {
+				log.Fatal(err)
+			}
 		}
 		bytesBuffer := bytes.Buffer{}
 		err := goldmark.Convert(contentBytes, &bytesBuffer)
@@ -75,8 +88,11 @@ func ReadPosts(files []string) ([]models.Post, error) {
 			Frontmatter: frontmatterObj,
 			Content:     template.HTML(bytesBuffer.String()),
 		}
+		fmt.Println("Post", post.Frontmatter.Type)
+		if post.Frontmatter.Type == "til" {
+			fmt.Println("TTTTTT", post.Frontmatter)
+		}
 		posts = append(posts, post)
-
 	}
 	return posts, nil
 }
@@ -130,6 +146,7 @@ func (p *PluginManager) Register(plugin plugins.Plugin) {
 }
 
 func (p *PluginManager) ExecuteAll(ssg *models.SSG) {
+	fmt.Println("Running plugins")
 	for _, plugin := range p.Plugins {
 		fmt.Println("Running plugin:", plugin.Name())
 		plugin.Execute(ssg)
@@ -165,8 +182,11 @@ func (c *PostReaderPlugin) Execute(ssg *models.SSG) {
 	if err != nil {
 		log.Fatal(err)
 	}
-	for _, _ = range postsList {
-		//fmt.Println(post.Frontmatter.Title)
+	for _, post := range postsList {
+		if post.Frontmatter.Status == "draft" {
+			continue
+		}
+		plugins.CleanPostFrontmatter(&post)
 	}
 	ssg.Posts = postsList
 }
@@ -202,7 +222,11 @@ func (c *RenderTemplatesPlugin) Execute(ssg *models.SSG) {
 	feedPosts := make(map[string][]models.Post)
 
 	for _, post := range ssg.Posts {
+		if post.Frontmatter.Status == "draft" {
+			continue
+		}
 		postType := post.Frontmatter.Type
+		fmt.Println(postType, post.Frontmatter.Title)
 		if postType == "" {
 			postType = "post"
 		}
@@ -213,15 +237,23 @@ func (c *RenderTemplatesPlugin) Execute(ssg *models.SSG) {
 		buffer := bytes.Buffer{}
 		postSlug := post.Frontmatter.Slug
 		if postSlug == "" {
-			postSlug = strings.ReplaceAll(post.Frontmatter.Title, " ", "-")
+			postSlug = plugins.Slugify(post.Frontmatter.Title)
 		}
-		post.Frontmatter.Slug = prefixURL + postSlug
-		outputDirPath := filepath.Join(outputPath, postSlug)
-		err = os.MkdirAll(outputDirPath, os.ModePerm)
+		fmt.Println("postSlug", postSlug)
+		post.Frontmatter.Slug = prefixURL + postType + "/" + postSlug
+		postPath := filepath.Join(outputPath, postType, postSlug)
+		//outputDirPath := filepath.Join(postPath, postSlug)
+		err = os.MkdirAll(postPath, os.ModePerm)
 		if err != nil {
 			log.Fatal(err)
 		}
-		outputPostPath := filepath.Join(outputDirPath, "index.html")
+		outputPostPath := filepath.Join(postPath, "index.html")
+		//sort post by date
+		sort.Slice(ssg.Posts, func(i, j int) bool {
+			date1, _ := time.Parse("2006-01-02", ssg.Posts[i].Frontmatter.Date)
+			date2, _ := time.Parse("2006-01-02", ssg.Posts[j].Frontmatter.Date)
+			return date2.Before(date1)
+		})
 		context := models.TemplateContext{
 			Post: post,
 			Themes: models.ThemeCombo{
@@ -237,7 +269,6 @@ func (c *RenderTemplatesPlugin) Execute(ssg *models.SSG) {
 			log.Fatal(err)
 		}
 		err = os.WriteFile(outputPostPath, buffer.Bytes(), 0660)
-
 		feedPosts[postType] = append(feedPosts[postType], post)
 	}
 	for postType, posts := range feedPosts {
@@ -390,6 +421,9 @@ func main() {
 		log.Fatal(err)
 	}
 	ssg.Config = config
+	if devEnv {
+		ssg.Config.Blog.PrefixURL = ""
+	}
 
 	// loading in the posts -> post folder
 	// load in the templates
@@ -421,7 +455,7 @@ func main() {
 					log.Printf("Error loading plugin %s: %v", plugin, err)
 					continue
 				}
-				fmt.Println(pluginStruct)
+				fmt.Println("Load", plugin, pluginStruct)
 				pluginManager.Register(pluginStruct)
 			} else {
 				continue
@@ -446,6 +480,10 @@ func LoadPlugin(pluginName string) (plugins.Plugin, error) {
 	pluginInstance, ok := pluginValue.(plugins.Plugin)
 	if !ok {
 		return nil, fmt.Errorf("type %s does not implement Plugin interface", pluginName)
+	}
+	val := reflect.ValueOf(pluginInstance).Elem()
+	if field := val.FieldByName("PluginName"); field.IsValid() && field.CanSet() {
+		field.SetString(pluginName)
 	}
 	return pluginInstance, nil
 }

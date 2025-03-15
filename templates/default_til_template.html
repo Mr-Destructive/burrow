@@ -5,6 +5,20 @@
     </head>
     <body>
         <h1>TIL: </h1>
+        <div class="post-meta">
+            <time datetime="{{ .Post.Frontmatter.Date }}">{{ .Post.Frontmatter.Date }}</time>
+        </div>
+        <div class="post-meta">
+            {{ range .Post.Frontmatter.Tags }}
+                <a href="/tags/{{ . }}">#{{ . }}</a>
+            {{ end }}
+        </div>
+        <div class="post-meta">
+            <a href="/{{ .Post.Frontmatter.Type }}">{{ .Post.Frontmatter.Type }}</a>
+        </div>
+        <div class="post-content">
+            {{ .Post.Content }}
+        </div>
         <p></p>
     </body>
 </html>

@@ -60,11 +60,13 @@ func writePostFile(title, slug, body, metadataStr, created, updated string) {
 		panic(err)
 	}
 	var postDir string
+	var baseDir string = "posts/"
 	if val, ok := metadata["post_dir"]; ok {
 		postDir = val.(string)
 	} else {
 		postDir = "posts"
 	}
+	postDir = baseDir + postDir
 	//create folder if not exists
 	if _, err := os.Stat(postDir); os.IsNotExist(err) {
 		os.Mkdir(postDir, 0777)

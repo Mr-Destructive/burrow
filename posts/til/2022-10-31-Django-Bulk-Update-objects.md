@@ -1,5 +1,5 @@
 ---
-type: tils
+type: til
 title: "Django Bulk Update QuerySet objects"
 description: "Using bulk_update to update multiple objects in one go."
 status: published

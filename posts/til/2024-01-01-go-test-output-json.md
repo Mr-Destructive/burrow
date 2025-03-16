@@ -1,5 +1,5 @@
 ---
-type: tils
+type: til
 title: "Golang: Test Output JSON"
 description: "Obtain JSON output of test results in Golang"
 status: published

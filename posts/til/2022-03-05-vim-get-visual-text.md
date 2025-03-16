@@ -1,5 +1,5 @@
 {
-    "type": "tils",
+    "type": "til",
     "title": "Vim: Get the Text from Visual Selection",
     "description": "Store the selected text in a variable in Vim Script",
     "date": "2022-03-05 17:25:37",

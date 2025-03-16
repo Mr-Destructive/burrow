@@ -1,7 +1,7 @@
 {
     "title": "Sample TIL",
     "description": "A sample TIL for ssg from scratch in golang",
-    "type": "tils",
+    "type": "til",
     "date": "2024-11-30",
     "status": "published",
     "tags": ["hows"],

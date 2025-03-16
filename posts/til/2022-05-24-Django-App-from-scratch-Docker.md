@@ -1,5 +1,5 @@
 ---
-type: tils 
+type: til 
 title: "Django App from Scratch Using Docker with Debian Base Image"
 description: "Creating a django basic application with configuration for static files, templates and user authentication using docker and debian base image."
 date: 2022-05-24 22:30:00

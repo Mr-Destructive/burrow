@@ -1,5 +1,5 @@
 {
-    "type": "tils",
+    "type": "til",
     "title": "Python: Search and Replace in File",
     "description": "Perform search-replace operation in a file using python",
     "date": "2022-03-28 18:59:30",

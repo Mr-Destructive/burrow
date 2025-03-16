@@ -1,5 +1,5 @@
 ---
-type: tils
+type: til
 title: "Golang: Sort Package Introduction"
 description: "Understanding the fundamentals of the sort package in Golang. Sorting integers, slices, struct values, maps"
 status: published

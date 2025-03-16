@@ -1,5 +1,5 @@
 {
-    "type": "tils",
+    "type": "til",
     "title": "Dockerize a Django project",
     "date": "2022-03-02 19:12:51",
     "status": "published",

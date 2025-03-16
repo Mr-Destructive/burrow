@@ -1,5 +1,5 @@
 ---
-type: tils
+type: til
 title: "Adding SSH Keys for Multiple Accounts in Git"
 description: "Setting up SSH config for using multiple accounts for Git repositories."
 status: published

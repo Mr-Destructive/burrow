@@ -1,5 +1,5 @@
 ---
-type: tils
+type: til
 title: "Gotcha with Chained Assignment in Python"
 description: "A lesson learned about Python's chained assignment with mutable objects, where all variables store references to the same object, leading to unexpected behaviour when one is modified."
 status: published

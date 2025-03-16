@@ -1,5 +1,5 @@
 ---
-type: tils
+type: til
 title: "Create a Non-Clustered Index in Django with Postgres as DB"
 description: "Understanding how to add a non-clustered index in a postgres database in a django project."
 status: published

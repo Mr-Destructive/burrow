@@ -1,5 +1,5 @@
 ---
-type: tils
+type: til
 title: "Python Pipreqs: Generate requirements file from the imported packages"
 description: "Exploring the pipreqs package that allows to list all the dependencies or packages which are imported in a python project"
 date: 2022-09-14 21:57:30

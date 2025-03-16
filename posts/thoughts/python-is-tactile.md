@@ -1,3 +1,9 @@
-{"author":"meet","date":"2025-03-08","status":"draft","title":"python is tactile","type":"thoughts"}
+{
+    "date":"2025-03-08",
+    "status":"published",
+    "title":"python is tactile",
+    "type":"thoughts"
+}
+
 
 Python is tactile

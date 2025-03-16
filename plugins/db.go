@@ -232,6 +232,10 @@ func CleanPostFrontmatter(post *models.Post, ssg *models.SSG) {
 		}
 	}
 	post.Frontmatter.Slug = fmt.Sprintf("%s%s/%s", ssg.Config.Blog.PrefixURL, post.Frontmatter.Type, post.Frontmatter.Slug)
+
+	if post.Frontmatter.Date == "" {
+		post.Frontmatter.Date = time.Now().Format("2006-01-02")
+	}
 }
 
 func init() {

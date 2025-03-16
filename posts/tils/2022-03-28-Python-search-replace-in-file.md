@@ -1,11 +1,11 @@
 {
     "type": "tils",
-    "title": "Python": "Search and Replace in File",
-    "description": ""Perform search-replace operation in a file using python",
+    "title": "Python: Search and Replace in File",
+    "description": "Perform search-replace operation in a file using python",
     "date": "2022-03-28 18:59:30",
     "status": "published",
     "slug": "python-search-replace-file",
-    "tags": ['python',],
+    "tags": ["python"]
 }
 
 ## Searching and Replacing the text in a File

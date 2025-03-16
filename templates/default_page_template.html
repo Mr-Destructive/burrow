@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ .Config.Blog.Name }} | {{ .Post.Frontmatter.Title }}</title>
+    <title>Techstructive Blog</title>
+    <link rel="stylesheet" type="text/css" href="style.css">
     <style>
             :root {
                 --bg-color: {{ .Themes.Default.Bg }};
@@ -24,8 +24,7 @@
                 --code-function-color: {{ .Themes.Default.Code.Function }};
             }
 
-            /* Dark theme variables */
-            .secondary-theme {
+            .secondary-theme{
                 --bg-color: {{ .Themes.Secondary.Bg }};
                 --text-color: {{ .Themes.Secondary.Text }};
                 --secondary-text-color: {{ .Themes.Secondary.SecondaryText }};
@@ -60,7 +59,7 @@
             padding-bottom: 1rem;
         }
 
-        h1, h2, h3, h4, h5, h6 {
+        h1, h2, h3 {
             color: var(--secondary-text-color);
         }
 
@@ -177,54 +176,22 @@
             background-color: var(--link-hover);
         }
 
-        code {
-          font-family: monospace;
-          padding: 2px 4px;
-          border-radius: 4px;
+        #editor {
+            background-color: #4CAF50; /* Green */
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            margin: 4px 2px;
+            cursor: pointer;
+            border-radius: 5px;
         }
-
-pre {
-    background-color: var(--code-bg-color, #f5f5f5);
-    border: 1px solid var(--code-border-color, #d1d1d1);
-    border-radius: 6px;
-    padding: 1rem;
-    overflow-x: auto;
-    margin: 1.5rem 0;
-}
-
-code {
-    font-family: 'SF Mono', Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace;
-    font-size: 0.9em;
-    color: var(--code-text-color, #fff);
-}
-
-p code {
-    color: var(--code-text-color, #000);
-    background-color: var(--code-bg-color, #444444);
-    padding: 0.2em 0.4em;
-    border-radius: 3px;
-}
-
-/* Syntax Highlighting */
-.Hljs-comment { color: var(--code-comment-color, #7d7d7d); }
-.Hljs-keyword { color: var(--code-keyword-color, #005cc5); }
-.Hljs-string { color: var(--code-string-color, #d73a49); }
-.Hljs-number { color: var(--code-number-color, #e36209); }
-.Hljs-variable { color: var(--code-variable-color, #6f42c1); }
-.Hljs-function { color: var(--code-function-color, #005cc5); }
-
-/* Dark Mode */
-.secondary-theme pre {
-    background-color: var(--code-bg-color, #1e1e1e);
-    border: 1px solid var(--code-border-color, #3c3c3c);
-}
-
-.secondary-theme .Hljs-comment { color: var(--code-comment-color, #6a737d); }
-.secondary-theme .Hljs-keyword { color: var(--code-keyword-color, #569cd6); }
-.secondary-theme .Hljs-string { color: var(--code-string-color, #ce9178); }
-.secondary-theme .Hljs-number { color: var(--code-number-color, #b5cea8); }
-.secondary-theme .Hljs-variable { color: var(--code-variable-color, #9cdcfe); }
-.secondary-theme .Hljs-function { color: var(--code-function-color, #dcdcaa); }
+        #editor i {
+            margin-right: 5px; /* Space between icon and text */
+        }
     </style>
     <script>
         document.addEventListener('DOMContentLoaded', () => {
@@ -247,81 +214,19 @@ p code {
                 }
             });
         });
-
-        document.addEventListener("DOMContentLoaded", () => {
-            document.querySelectorAll("pre").forEach((pre) => {
-                const button = document.createElement("button");
-                button.classList.add("copy-btn");
-                button.textContent = "Copy";
-                
-                button.addEventListener("click", () => {
-                    const code = pre.querySelector("code");
-                    if (!code) return;
-
-                    const textToCopy = code.innerText || code.textContent;
-                    navigator.clipboard.writeText(textToCopy).then(() => {
-                        button.textContent = "Copied!";
-                        button.classList.add("copied");
-
-                        setTimeout(() => {
-                            button.textContent = "Copy";
-                            button.classList.remove("copied");
-                        }, 1500);
-                    });
-                });
-
-                pre.appendChild(button);
-            });
-        });
     </script>
 </head>
+
 <body>
-    <header>
-        <h1 class="site-title"><a href="/{{ .Config.Blog.PrefixURL }}">{{ .Config.Blog.Name }}</a></h1>
-        <button id="theme-toggle" aria-label="Theme">Theme</button>
-    </header>
-
-    <main class="container">
-        <article class="blog-post">
-            <h1>{{ .Post.Frontmatter.Title }}</h1>
-            <div class="post-meta">
-                Published on 📅 <time datetime="{{ .Post.Frontmatter.Date }}">{{ .Post.Frontmatter.Date }}</time>
-            </div>
-            <div class="post-meta">
-                Type: <a href="/{{ $.Config.Blog.PrefixURL }}{{ .Post.Frontmatter.Type }}">{{ .Post.Frontmatter.Type }}</a>
-            </div>
-            <div class="post-meta">
-                <span class="post-series-label"> 🏷️ Tags:</span>
-                {{ range .Post.Frontmatter.Tags }}
-                <a href="/{{ $.Config.Blog.PrefixURL }}tags/{{ . }}">#{{ . }}</a>
-                {{ end }}
-            </div>
-            {{ if index .Post.Frontmatter.Extras "series" }}
-            <div class="post-series">
-                <span class="series-label">Part of the
-                <div class="series-list">
-                    {{ range index .Post.Frontmatter.Extras "series" }}
-                    <a href="/{{ $.Config.Blog.PrefixURL }}series/{{ . }}" class="series-link">📖 {{ . }}</a>
-                    {{ end }}
-                </div></span>
-                <span class="series-label">series</span>
-            </div>
-            {{ end }}
-            <hr>
-            <div class="post-content">
-                {{ .Post.Content }}
-            </div>
-        </article>
-    </main>
-    
-    <footer class="site-footer">
-        <div class="container">
-            <p>&copy; {{ .Config.Blog.Name }}. All rights reserved.</p>
-        </div>
-    </footer>
-
-
-    <script>
-    </script>
+    <h1>{{ .FeedInfo.Title }}</h1>
+    <p>Back to <a href="/{{ .Config.Blog.PrefixURL }}">Home</a></p>
+    <button id="theme-toggle" aria-label="Theme">Theme</button>
+    <button id="editor" onclick="location.href='/{{.Config.Blog.PrefixURL}}editor'">
+        <i class="fas fa-edit"></i> Editor
+    </button>
+    {{ range .FeedInfo.Posts }}
+        {{ .Content }}
+    {{ end }}
 </body>
+
 </html>

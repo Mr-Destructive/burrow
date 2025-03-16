@@ -138,6 +138,7 @@ func ReadPosts(files []string) ([]models.Post, error) {
 		posts = append(posts, models.Post{
 			Frontmatter: frontmatterObj,
 			Content:     template.HTML(contentBuffer.String()),
+			Markdown:    string(contentBytes),
 		})
 	}
 
@@ -177,6 +178,82 @@ func Copy(src string, dst string) error {
 		defer dstFile.Close()
 
 		_, err = io.Copy(dstFile, srcFile)
+		if err != nil {
+			log.Fatal(err)
+		}
+	}
+	return nil
+}
+
+func GeneratePages(config models.SSG_CONFIG) error {
+	src := config.Blog.StaticDir
+	templateFS := os.DirFS(config.Blog.TemplatesDir)
+	mdFiles := []string{}
+	filterMDFile := func(path string, info os.FileInfo, err error) error {
+		if err != nil {
+			return err
+		}
+		if info.IsDir() {
+			return nil
+		}
+		if filepath.Ext(path) == ".md" {
+			mdFiles = append(mdFiles, path)
+		}
+		return nil
+	}
+	err := filepath.Walk(src, filterMDFile)
+	if err != nil {
+		return err
+	}
+	for _, mdFile := range mdFiles {
+		mdFileName := filepath.Base(mdFile)
+		content, err := ReadPosts([]string{string(mdFile)})
+		if err != nil {
+			log.Fatal(err)
+		}
+		postContent := string(content[0].Content)
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		mdFileName = strings.TrimSuffix(mdFileName, filepath.Ext(mdFileName))
+		feed := models.Feed{
+			Title: strings.ToTitle(mdFileName),
+			Type:  mdFileName,
+			Slug:  mdFileName,
+			Posts: []models.Post{
+				{
+					Content: template.HTML(string(postContent)),
+					Frontmatter: models.FrontMatter{
+						Title: mdFileName,
+						Slug:  mdFileName,
+					},
+				},
+			},
+		}
+		context := models.TemplateContext{
+			FeedPosts: []models.Feed{feed},
+			Themes: models.ThemeCombo{
+				Default:   config.Blog.Themes["default"],
+				Secondary: config.Blog.Themes["secondary"],
+			},
+			FeedInfo: feed,
+			Config: models.SSG_CONFIG{
+				Blog: config.Blog,
+			},
+		}
+		buffer := bytes.Buffer{}
+		t, err := template.ParseFS(templateFS, "default_page_template.html")
+		err = t.ExecuteTemplate(&buffer, "default_page_template.html", context)
+		if err != nil {
+			log.Fatal(err)
+		}
+		//create a folder with mdFileName
+		err = os.MkdirAll(filepath.Join(".", config.Blog.OutputDir, mdFileName), os.ModePerm)
+		if err != nil {
+			log.Fatal(err)
+		}
+		err = os.WriteFile(filepath.Join(".", config.Blog.OutputDir, mdFileName, "index.html"), buffer.Bytes(), 0660)
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -236,6 +313,7 @@ func (c *PostReaderPlugin) Execute(ssg *models.SSG) {
 		plugins.CleanPostFrontmatter(&post, ssg)
 	}
 	ssg.Posts = postsList
+	fmt.Println("Posts:", len(ssg.Posts))
 }
 
 type RenderTemplatesPlugin struct {
@@ -267,8 +345,10 @@ func (c *RenderTemplatesPlugin) Execute(ssg *models.SSG) {
 		log.Fatal(err)
 	}
 	feedPosts := make(map[string][]models.Post)
+	fmt.Println("Posts:", len(ssg.Posts))
 
 	for _, post := range ssg.Posts {
+		fmt.Println("Post:", post.Frontmatter.Title, post.Frontmatter.Type)
 		if post.Frontmatter.Status == "draft" {
 			continue
 		}
@@ -301,12 +381,14 @@ func (c *RenderTemplatesPlugin) Execute(ssg *models.SSG) {
 
 			if err1 != nil {
 				date1 = time.Time{}
+				return true
 			}
 			if err2 != nil {
 				date2 = time.Time{}
+				return false
 			}
 
-			return date2.Before(date1)
+			return date1.Before(date2)
 		})
 
 		for i := range ssg.Posts {
@@ -333,6 +415,9 @@ func (c *RenderTemplatesPlugin) Execute(ssg *models.SSG) {
 		fmt.Println(postType)
 		fmt.Println(len(posts))
 	}
+	for key, value := range feedPosts {
+		fmt.Println(key, len(value))
+	}
 	feedPostLists := []models.Feed{}
 	for postType, posts := range feedPosts {
 		fmt.Println(config.Blog.PagesConfig[postType].Emoji)
@@ -342,6 +427,7 @@ func (c *RenderTemplatesPlugin) Execute(ssg *models.SSG) {
 			Slug:  prefixURL + postType,
 			Posts: posts,
 		}
+		fmt.Println("Feed", feed.Title, feed.Slug)
 		feedPostLists = append(feedPostLists, feed)
 	}
 	ssg.FeedPosts = feedPostLists
@@ -376,6 +462,7 @@ func (c *CreateFeedsPlugin) Execute(ssg *models.SSG) {
 				Blog: config.Blog,
 			},
 		}
+		fmt.Println("Post:", feed.Title, len(feed.Posts))
 		err := ssg.TemplateFS.ExecuteTemplate(&buffer, templatePath, context)
 		if err != nil {
 			log.Fatal(err)
@@ -400,6 +487,7 @@ func (c *CopyStaticFilesPlugin) Name() string {
 func (c *CopyStaticFilesPlugin) Execute(ssg *models.SSG) {
 	config := &ssg.Config
 	err := Copy(config.Blog.StaticDir, config.Blog.OutputDir)
+	err = GeneratePages(*config)
 	if err != nil {
 		log.Fatal(err)
 	}

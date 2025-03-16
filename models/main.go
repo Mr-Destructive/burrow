@@ -46,6 +46,7 @@ type Theme struct {
 
 type BlogConfig struct {
 	Name                string                `json:"name"`
+	Description         string                `json:"description"`
 	BaseUrl             string                `json:"base_url"`
 	PostsDir            string                `json:"posts_dir"`
 	TemplatesDir        string                `json:"templates_dir"`
@@ -96,6 +97,7 @@ var PostTypes = map[PostType]string{
 type Post struct {
 	Frontmatter FrontMatter
 	Content     template.HTML
+	Markdown    string
 }
 
 type Feed struct {

@@ -1,7 +1,7 @@
 {
     "blog": {
         "name": "Techstructive Blog",
-        "base_url": "meetgor.com",
+        "base_url": "dev.meetgor.com",
         "posts_dir": "posts",
         "templates_dir": "templates",
         "static_dir": "static",
@@ -109,6 +109,9 @@
         "Db",
         "Tags",
         "Series",
+        "YearWise",
+        "Sitemap",
+        "RSS",
         "index",
         "server"
     ]

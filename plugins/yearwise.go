@@ -7,50 +7,44 @@ import (
 	"os"
 	"path/filepath"
 	"reflect"
+	"time"
 
 	"github.com/mr-destructive/burrow/models"
 )
 
-type SeriesPlugin struct {
+type YearPlugin struct {
 	PluginName string
 }
 
-func (p *SeriesPlugin) Name() string {
+func (p *YearPlugin) Name() string {
 	return p.PluginName
 }
 
-func (p *SeriesPlugin) Execute(ssg *models.SSG) {
+func (p *YearPlugin) Execute(ssg *models.SSG) {
 	config := &ssg.Config
-	seriesPost := make(map[string][]models.Post)
+	yearWisePosts := make(map[string][]models.Post)
 	for _, post := range ssg.Posts {
 		if post.Frontmatter.Status == "draft" {
 			continue
 		}
 		CleanPostFrontmatter(&post, ssg)
-		if post.Frontmatter.Extras == nil {
-			continue
+		date := post.Frontmatter.Date
+		parsedDate, err := time.Parse("2006-01-02", string(date))
+		if err != nil {
+			log.Println(err)
 		}
-		if post.Frontmatter.Extras["series"] == nil {
-			continue
-		}
-		seriesList := post.Frontmatter.Extras["series"].([]interface{})
-		for _, series := range seriesList {
-			series := Slugify(series.(string))
-			seriesPost[series] = append(seriesPost[series], post)
-		}
+		yearWisePosts[parsedDate.Format("2006")] = append(yearWisePosts[parsedDate.Format("2006")], post)
 	}
-	fmt.Println("seriesPost", len(seriesPost))
-
-	for series, posts := range seriesPost {
+	for year, posts := range yearWisePosts {
 		buffer := bytes.Buffer{}
-		templatePath := config.Blog.PagesConfig["series"].TemplatePath
+		templatePath := config.Blog.PagesConfig["tags"].TemplatePath
 		if templatePath == "" {
 			templatePath = config.Blog.DefaultFeedTemplate
 		}
 		feed := models.Feed{
-			Title: series,
-			Type:  series,
-			Slug:  ssg.Config.Blog.PrefixURL + "series/" + series,
+			Title: year,
+			Type:  year,
+			Slug:  ssg.Config.Blog.PrefixURL + year,
 			Posts: posts,
 		}
 
@@ -69,7 +63,7 @@ func (p *SeriesPlugin) Execute(ssg *models.SSG) {
 		if err != nil {
 			log.Fatal(err)
 		}
-		feedPath := filepath.Join(".", config.Blog.OutputDir, "series", feed.Type)
+		feedPath := filepath.Join(".", config.Blog.OutputDir, feed.Type)
 		err = os.MkdirAll(feedPath, os.ModePerm)
 		outputFeedPath := fmt.Sprintf("%s/index.html", feedPath)
 		err = os.WriteFile(outputFeedPath, buffer.Bytes(), 0660)
@@ -77,7 +71,7 @@ func (p *SeriesPlugin) Execute(ssg *models.SSG) {
 }
 
 func init() {
-	RegisterPlugin("Series", reflect.TypeOf(SeriesPlugin{
-		PluginName: "Series",
+	RegisterPlugin("YearWise", reflect.TypeOf(YearPlugin{
+		PluginName: "YearWise",
 	}))
 }

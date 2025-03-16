@@ -59,7 +59,7 @@ func (p *TagsPlugin) Execute(ssg *models.SSG) {
 		if err != nil {
 			log.Fatal(err)
 		}
-		feedPath := filepath.Join(".", config.Blog.OutputDir, ssg.Config.Blog.PrefixURL, "tags", feed.Type)
+		feedPath := filepath.Join(".", config.Blog.OutputDir, "tags", feed.Type)
 		err = os.MkdirAll(feedPath, os.ModePerm)
 		outputFeedPath := fmt.Sprintf("%s/index.html", feedPath)
 		err = os.WriteFile(outputFeedPath, buffer.Bytes(), 0660)

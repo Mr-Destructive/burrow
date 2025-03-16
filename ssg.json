@@ -8,7 +8,7 @@
         "output_dir": "public",
         "default_feed_template": "default_feed_template.html",
         "default_post_template": "default_post_template.html",
-        "prefix_url": "burrow/",
+        "prefix_url": "",
         "pages": {
             "posts": {
                 "template": "default_post_template.html",

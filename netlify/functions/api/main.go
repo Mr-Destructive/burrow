@@ -128,7 +128,10 @@ func jsonResponse(statusCode int, data interface{}) events.APIGatewayProxyRespon
 	return events.APIGatewayProxyResponse{
 		StatusCode: statusCode,
 		Headers: map[string]string{
-			"Content-Type": "application/json",
+			"Content-Type":                 "application/json",
+			"Access-Control-Allow-Origin":  "*",
+			"Access-Control-Allow-Methods": "POST, OPTIONS",
+			"Access-Control-Allow-Headers": "Content-Type, Authorization",
 		},
 		Body: string(body),
 	}

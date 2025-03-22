@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Techstructive Blog | Golang: Input</title>
+    <style>
+            :root {
+                --bg-color: #ffffff;
+                --text-color: #333333;
+                --secondary-text-color: ;
+                --link-normal: #007bff;
+                --link-hover: #0056b3;
+                --link-active: #003a75;
+                --quote-color: #999999;
+                --code-bg-color: #dddddd;
+                --code-border-color: #ced4da;
+                --code-text-color: #444444;
+                --code-comment-color: #808080;
+                --code-keyword-color: #008000;
+                --code-string-color: #000080;
+                --code-number-color: #000000;
+                --code-variable-color: #000000;
+                --code-function-color: #000000;
+            }
+
+             
+            .secondary-theme {
+                --bg-color: #121212;
+                --text-color: #ffffff;
+                --secondary-text-color: #ff6600;
+                --link-normal: #ff6600;
+                --link-hover: #4682b4;
+                --link-active: #00008b;
+                --quote-color: #a9a9a9;
+                --code-bg-color: #333333;
+                --code-border-color: #444444;
+                --code-text-color: #ffffff;
+                --code-comment-color: #b0b0b0;
+                --code-keyword-color: #32cd32;
+                --code-string-color: #ff6347;
+                --code-number-color: #d3d3d3;
+                --code-variable-color: #b0e0e6;
+                --code-function-color: #ff4500;
+            }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-family: 'SF Mono', Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace;
+            line-height: 1.6;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        header {
+            border-bottom: 1px solid var(--border-color);
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+        }
+
+        h1, h2, h3, h4, h5, h6 {
+            color: var(--secondary-text-color);
+        }
+
+        .Site-title {
+            font-size: 1.8rem;
+            margin: 0;
+        }
+
+        .Site-title a {
+            color: var(--accent-color);
+            text-decoration: none;
+            transition: color 0.2s ease;
+        }
+
+        .Site-title a:hover {
+            color: var(--hover-color);
+        }
+
+        .Post-meta {
+            color: var(--secondary-text);
+            font-size: 0.9rem;
+            margin: 1rem 0;
+        }
+
+        article {
+            margin: 2rem 0;
+        }
+
+        pre {
+            background-color: var(--code-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            padding: 1rem;
+            overflow-x: auto;
+            margin: 1.5rem 0;
+        }
+
+        code {
+            font-family: 'SF Mono', Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace;
+            font-size: 0.9em;
+        }
+
+        p code {
+            background-color: var(--inline-code-bg);
+            padding: 0.2em 0.4em;
+            border-radius: 3px;
+        }
+
+        blockquote {
+            border-left: 3px solid var(--accent-color);
+            margin: 1.5rem 0;
+            padding-left: 1rem;
+            color: var(--secondary-text);
+        }
+
+        a {
+            color: var(--link-normal);
+            text-decoration: none;
+            transition: color 0.2s ease;
+        }
+
+        a:hover {
+            color: var(--hover-color);
+        }
+
+        .Hljs-comment { color: var(--code-comment); } 
+        .Hljs-keyword { color: var(--code-keyword); }
+        .Hljs-string { color: var(--code-string); }
+        .Hljs-number { color: var(--code-number); }
+        .Hljs-function { color: var(--code-function); }
+        .Hljs-variable { color: var(--code-variable); }
+
+        button, .Button {
+            background-color: var(--accent-color);
+            border: none;
+            border-radius: 6px;
+            color: var(--bg-color);
+            cursor: pointer;
+            font-family: inherit;
+            font-size: 0.9rem;
+            padding: 0.5rem 1rem;
+            transition: background-color 0.2s ease;
+        }
+
+        button:hover, .Button:hover {
+            background-color: var(--hover-color);
+        }
+
+
+         
+        @media (max-width: 768px) {
+            body {
+                padding: 1rem;
+            }
+
+            pre {
+                margin: 1rem -1rem;
+                border-radius: 0;
+            }
+        }
+        #theme-toggle {
+            background-color: var(--link-normal);
+            border: none;
+            border-radius: 6px;
+            color: var(--bg-color);
+            cursor: pointer;
+            font-family: inherit;
+            font-size: 1rem;
+            padding: 0.5rem 1.5rem;
+            transition: background-color 0.2s ease;
+        }
+
+        #theme-toggle:hover {
+            background-color: var(--link-hover);
+        }
+
+        code {
+          font-family: monospace;
+          padding: 2px 4px;
+          border-radius: 4px;
+        }
+
+pre {
+    background-color: var(--code-bg-color, #f5f5f5);
+    border: 1px solid var(--code-border-color, #d1d1d1);
+    border-radius: 6px;
+    padding: 1rem;
+    overflow-x: auto;
+    margin: 1.5rem 0;
+}
+
+code {
+    font-family: 'SF Mono', Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace;
+    font-size: 0.9em;
+    color: var(--code-text-color, #fff);
+}
+
+p code {
+    color: var(--code-text-color, #000);
+    background-color: var(--code-bg-color, #444444);
+    padding: 0.2em 0.4em;
+    border-radius: 3px;
+}
+
+ 
+.Hljs-comment { color: var(--code-comment-color, #7d7d7d); }
+.Hljs-keyword { color: var(--code-keyword-color, #005cc5); }
+.Hljs-string { color: var(--code-string-color, #d73a49); }
+.Hljs-number { color: var(--code-number-color, #e36209); }
+.Hljs-variable { color: var(--code-variable-color, #6f42c1); }
+.Hljs-function { color: var(--code-function-color, #005cc5); }
+
+ 
+.secondary-theme pre {
+    background-color: var(--code-bg-color, #1e1e1e);
+    border: 1px solid var(--code-border-color, #3c3c3c);
+}
+
+.secondary-theme .Hljs-comment { color: var(--code-comment-color, #6a737d); }
+.secondary-theme .Hljs-keyword { color: var(--code-keyword-color, #569cd6); }
+.secondary-theme .Hljs-string { color: var(--code-string-color, #ce9178); }
+.secondary-theme .Hljs-number { color: var(--code-number-color, #b5cea8); }
+.secondary-theme .Hljs-variable { color: var(--code-variable-color, #9cdcfe); }
+.secondary-theme .Hljs-function { color: var(--code-function-color, #dcdcaa); }
+    </style>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const themeToggle = document.getElementById('theme-toggle');
+            const body = document.body;
+
+            const currentTheme = localStorage.getItem('theme') || 'light';
+
+            if (currentTheme === 'secondary') {
+                body.classList.add('secondary-theme');
+            }
+
+            themeToggle.addEventListener('click', () => {
+                if (body.classList.contains('secondary-theme')) {
+                    body.classList.remove('secondary-theme');
+                    localStorage.setItem('theme', 'light');
+                } else {
+                    body.classList.add('secondary-theme');
+                    localStorage.setItem('theme', 'secondary');
+                }
+            });
+        });
+
+        document.addEventListener("DOMContentLoaded", () => {
+            document.querySelectorAll("pre").forEach((pre) => {
+                const button = document.createElement("button");
+                button.classList.add("copy-btn");
+                button.textContent = "Copy";
+                
+                button.addEventListener("click", () => {
+                    const code = pre.querySelector("code");
+                    if (!code) return;
+
+                    const textToCopy = code.innerText || code.textContent;
+                    navigator.clipboard.writeText(textToCopy).then(() => {
+                        button.textContent = "Copied!";
+                        button.classList.add("copied");
+
+                        setTimeout(() => {
+                            button.textContent = "Copy";
+                            button.classList.remove("copied");
+                        }, 1500);
+                    });
+                });
+
+                pre.appendChild(button);
+            });
+        });
+    </script>
+</head>
+<body>
+    <header>
+        <h1 class="site-title"><a href="/">Techstructive Blog</a></h1>
+        <button id="theme-toggle" aria-label="Theme">Theme</button>
+    </header>
+
+    <main class="container">
+        <article class="blog-post">
+            <h1>Golang: Input</h1>
+            <div class="post-meta">
+                Published on 📅 <time datetime="2022-04-05">2022-04-05</time>
+            </div>
+            <div class="post-meta">
+                Type: <a href="/posts">posts</a>
+            </div>
+            <div class="post-meta">
+                <span class="post-series-label"> 🏷️ Tags:</span>
+                
+                <a href="/tags/go">#go</a>
+                
+            </div>
+            
+            <div class="post-series">
+                <span class="series-label">Part of the
+                <div class="series-list">
+                    
+                    <a href="/series/100-days-of-golang" class="series-link">📖 100-days-of-golang</a>
+                    
+                </div></span>
+                <span class="series-label">series</span>
+            </div>
+            
+            <hr>
+            <div class="post-content">
+                <h2>Introduction</h2>
+<p>In this fourth section of Golang, we will be understanding the basics of user input. In golang, we can get user input with several functions most of which are similar to the <code>C</code> programming language like <code>scanf</code>. This type of input is quite powerful and gives more control on the input to be received.</p>
+<h2>Scan Function</h2>
+<p>The <a href="https://pkg.go.dev/fmt#Scan">Scan</a> function helps in getting a value with space as delimiter i.e. The input is stored before a space is encountered. This means the input is only limited to adding a space or a new line. We can use the function by passing the reference to the variable we are going to store the input value. So, we can have a basic input in Golang as follows:</p>
+<pre><code class="language-go">package main
+
+import &quot;fmt&quot;
+
+func main() {
+    var pname string
+    fmt.Println(&quot;Enter your favourite programming language: &quot;)
+    fmt.Scan(&amp;pname)
+    fmt.Println(&quot;So, your favourite programming language is&quot;,pname)
+}
+</code></pre>
+<pre><code>$ go run scan.go
+Enter your favorite programming language:
+python
+So, your favorite programming language is python
+</code></pre>
+<p>We need to declare the variable to take input as we need a reference of that variable to store the input. We will be talking about <code>&amp;</code> and pointers in a separate article. We use the <code>Scan</code> function by passing the reference to the variable <code>pname</code> like <code>&amp;pname</code> which means, fetch the memory address of the variable <code>name</code>, we just pass the address as <code>int</code> to the Scan function and it does the rest to store the input value in it. We then as usual access the variable and operations on it.</p>
+<p>Here, if you add a space in the input, the value after the space won't be picked by the Scan function. It strictly stops accepting values input after it sees space. We can use this to input multiple variables at once. We know scan gets input before encountering space, so we can pass multiple variable references and add them as input.</p>
+<pre><code class="language-go">var (
+    name   string
+    age    int
+    gender rune
+)
+fmt.Println(&quot;Enter your name age and gender: &quot;)
+fmt.Scan(&amp;name, &amp;age, &amp;gender)
+fmt.Printf(&quot;Hello %s, you are a %c and %d years old&quot;, name, gender, age)
+</code></pre>
+<pre><code>$ go run scan.go
+Enter your name age and gender:
+Meet 19 77
+Hello Meet, you are a M and 19 years old
+</code></pre>
+<p>Here, we are declaring multiple variables like <code>name</code>, <code>age</code>, and <code>gender</code> as <code>string</code>, <code>int</code>, and <code>rune</code> respectively. Then, we can input all of these in a single scan statement by comma-separated variables. Here, we need to input the <code>rune</code> as an int value because under the hood it is an integer alias. So, we inputted <code>77</code> which is equivalent to <code>M</code> in ASCII characters and even Unicode character sets. Thus, we were able to input multiple variables with the Scan function.</p>
+<h2>Scanf functions</h2>
+<p>The <a href="https://pkg.go.dev/fmt#Scanf">Scanf</a> function is quite similar to the <code>scanf</code> in C programming language as it allows to specify the type of the incoming input. This will solve the problem of us inputting <code>77</code> instead of <code>M</code> in the gender variable in the previous example. The Scanf function allows us to take input by specifying the placeholder types and the delimiters as well. The delimiter is basically the separator between two or more entities. We can either use space separation or <code> </code> as an input delimiter i.e. the way we want to separate inputs from each other while taking input.</p>
+<pre><code class="language-go">var (
+    name   string
+    age    int
+    gender rune
+)
+fmt.Println(&quot;Enter your name age and gender: &quot;)
+fmt.Scanf(&quot;%s %d %c&quot;, &amp;name, &amp;age, &amp;gender)
+fmt.Printf(&quot;Hello %s, you are a %c and %d years old&quot;, name, gender, age)
+</code></pre>
+<pre><code>$ go run scanf.go
+Enter your name age and gender:
+Meet 12 M
+Hello Meet, you are a M and 12 years old
+
+
+</code></pre>
+<p>How cool is that? It definitely gives much more control on what and how to take input. We are taking input as only space-separated values. Let's now try to get more control over how the input will be taken and stored.</p>
+<pre><code class="language-go">var (
+    name   string
+    age    int
+    gender rune
+)
+fmt.Println(&quot;Enter your name age and gender: &quot;)
+fmt.Scanf(&quot;%s 
+ %d %c&quot;, &amp;name, &amp;age, &amp;gender)
+fmt.Printf(&quot;Hello %s, you are a %c and %d years old&quot;, name, gender, age)
+</code></pre>
+<pre><code>$ go run scanf.go
+Enter your name age and gender:
+Meet
+12 M
+Hello Meet, you are a M and 12 years old
+</code></pre>
+<p>By adding <code> </code> between the <code>%s</code>(name) and <code>%d</code>(age), we want the user to type the name on one line and age with gender on a different line. The age and gender as before separated by space.</p>
+<h2>Scanln function</h2>
+<p>The <a href="https://pkg.go.dev/fmt#Scanln">Scanln</a> function is a modification of the Scan function as it only stops the input after a newline/enter is pressed.  So, using this we can input multiple variables which are space-separated in a single line.</p>
+<pre><code class="language-go">var s string
+fmt.Println(&quot;Enter a string: &quot;)
+fmt.Scanln(&amp;s)
+fmt.Println(s)
+</code></pre>
+<pre><code>$ go run scanln.go
+Enter a string:
+
+
+
+$ go run scanln.go
+Enter a string:
+Can't type
+Can't
+
+$ ype
+-bash: ype: command not found
+</code></pre>
+<p>The Scanln function even accepts an empty string as input. It just needs to get the new line character and it will exit, it also only accepts space-separated values. The rest of the input after space is thrown away and is basically exited from the program stream. More specifically, the input <code>Can't Type</code> was treated only as <code>Can't</code> anything after the space is not considered in the input value.</p>
+<p>The key difference between Scan and Scanln is that Scanln will not accept input that is space-separated, Scan function considers the newline/enter as a space if there are multiple inputs. The below example will make things absolutely clear.</p>
+<pre><code class="language-go">// scan.go
+package main
+
+import &quot;fmt&quot;
+
+func main() {
+    var (
+        name   string
+        age    int
+        gender rune
+    )
+    fmt.Println(&quot;Enter your name age and gender: &quot;)
+    fmt.Scan(&amp;name, &amp;age, &amp;gender)
+    fmt.Printf(&quot;Hello %s, you are a %c and %d years old&quot;, name, gender, age)
+}
+
+</code></pre>
+<pre><code class="language-go">//scanln.go
+package main
+
+import &quot;fmt&quot;
+
+func main() {
+    var s string
+    fmt.Println(&quot;Enter a string: &quot;)
+    fmt.Scanln(&amp;s)
+    fmt.Println(&quot;Inputted string : &quot;, s)
+}
+</code></pre>
+<pre><code>$ go run scan.go
+Enter your name age and gender:
+
+Meet
+
+14
+
+
+
+77
+Hello Meet, you are a M and 14 years old
+
+$ go run scanln.go
+Enter a string:
+
+Inputted string :
+</code></pre>
+<p>We can see that, The Scan function won't exit until it has inputted all its input values even with newline and spaces. Whereas the Scanln function just waits for the newline character (Enter Key) to be pressed and it exits, thereby even allowing an empty string as input.</p>
+<p>That's it from this part. Reference for all the code examples and commands can be found in the <a href="https://github.com/mr-destructive/100-days-of-golang/">100 days of Golang</a> GitHub repository.</p>
+<h2>Conclusion</h2>
+<p>So, these are the basic input techniques in Golang. We saw functions in the <code>fmt</code> package like <code>Scan</code>, <code>Scanf</code>, and <code>Scanln</code> which allow us to get input in a specific pattern. Hopefully, from this article part, we can build a firm base for further exploration like Strings, Arrays, and the ways to input them. Thank you for reading. If you have any questions or feedback, please let me know in the comments or on social handles. Happy Coding :)</p>
+
+            </div>
+        </article>
+    </main>
+    
+    <footer class="site-footer">
+        <div class="container">
+            <p>&copy; Techstructive Blog. All rights reserved.</p>
+        </div>
+    </footer>
+
+
+    <script>
+    </script>
+</body>
+</html>

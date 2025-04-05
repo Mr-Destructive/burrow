@@ -30,7 +30,7 @@ func (q *Queries) CreateAuthor(ctx context.Context, arg CreateAuthorParams) (int
 
 const createPost = `-- name: CreatePost :one
 INSERT INTO posts (title, slug, body, metadata, author_id) 
-VALUES (?, ?, ?, ?, ?) RETURNING id, title, slug, body, metadata, created_at, updated_at, author_id
+VALUES (?, ?, ?, ?, ?) RETURNING id, title, slug, body, metadata, deleted, created_at, updated_at, author_id
 `
 
 type CreatePostParams struct {
@@ -56,6 +56,7 @@ func (q *Queries) CreatePost(ctx context.Context, arg CreatePostParams) (Post, e
 		&i.Slug,
 		&i.Body,
 		&i.Metadata,
+		&i.Deleted,
 		&i.CreatedAt,
 		&i.UpdatedAt,
 		&i.AuthorID,
@@ -78,6 +79,43 @@ func (q *Queries) GetAuthorByID(ctx context.Context, id int64) (Author, error) {
 		&i.IsAdmin,
 	)
 	return i, err
+}
+
+const getPostsBySlugType = `-- name: GetPostsBySlugType :many
+SELECT id, title, slug, body, metadata, deleted, created_at, updated_at, author_id FROM posts WHERE slug = ? AND deleted = 0
+`
+
+func (q *Queries) GetPostsBySlugType(ctx context.Context, slug string) ([]Post, error) {
+	rows, err := q.db.QueryContext(ctx, getPostsBySlugType, slug)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []Post
+	for rows.Next() {
+		var i Post
+		if err := rows.Scan(
+			&i.ID,
+			&i.Title,
+			&i.Slug,
+			&i.Body,
+			&i.Metadata,
+			&i.Deleted,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+			&i.AuthorID,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
 }
 
 const getUser = `-- name: GetUser :one

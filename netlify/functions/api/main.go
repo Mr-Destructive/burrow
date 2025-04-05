@@ -31,12 +31,12 @@ var editForm string = `
 
     <div class="mb-4">
         <label for="metadata" class="block text-lg font-medium">Metadata (JSON):</label>
-        <textarea name="metadata" value="{{ .Metadata }}" id="metadata" rows="4" class="w-full p-2 border rounded-md shadow-sm" placeholder='{"key": "value"}'></textarea>
+        <textarea name="metadata" id="metadata" rows="4" class="w-full p-2 border rounded-md shadow-sm" placeholder='{"key": "value"}'> {{ .Metadata }}</textarea>
     </div>
 
     <div class="mb-4">
         <label for="content" class="block text-lg font-medium">Body (Markdown):</label>
-        <textarea name="content" id="content" rows="6" class="w-full p-2 border rounded-md shadow-sm" value="{{ .Content }}">{{ .Post }}</textarea>
+        <textarea name="content" id="content" rows="6" class="w-full p-2 border rounded-md shadow-sm">{{ .Post }}</textarea>
     </div>
 
     <div class="mb-4">
@@ -115,36 +115,36 @@ func handler(req events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse,
 			for _, post := range postsBySlug {
 				metadataObj := make(map[string]interface{})
 				err = json.Unmarshal([]byte(post.Metadata), &metadataObj)
-                log.Printf("Metadata: %v", metadataObj)
-                log.Printf("Error: %v", err)
+				log.Printf("Metadata: %v", metadataObj)
+				log.Printf("Error: %v", err)
 				if err != nil {
 					return errorResponse(http.StatusInternalServerError, "Invalid metadata Payload"), nil
 				}
 				markdown, err := htmltomarkdown.ConvertString(post.Body)
-                log.Printf("Markdown: %v", markdown)
-                log.Printf("Error: %v", err)
+				log.Printf("Markdown: %v", markdown)
+				log.Printf("Error: %v", err)
 				if err != nil {
 					return errorResponse(http.StatusInternalServerError, "Invalid metadata Payload"), nil
 				}
 				//if metadataObj["type"] == postType {
-					payload = plugins.Payload{
-						Title:    post.Title,
-						Metadata: metadataObj,
-						Post:     markdown,
-					}
-					templ := template.Must(template.New("editForm").Parse(editForm))
-					buffer := new(bytes.Buffer)
-					templ.Execute(buffer, payload)
-					return events.APIGatewayProxyResponse{
-						StatusCode: http.StatusOK,
-						Headers: map[string]string{
-							"Access-Control-Allow-Origin":  "*",
-							"Access-Control-Allow-Methods": "POST, OPTIONS",
-							"Access-Control-Allow-Headers": "Content-Type, Authorization",
-						},
-						Body:            buffer.String(),
-						IsBase64Encoded: false,
-					}, nil
+				payload = plugins.Payload{
+					Title:    post.Title,
+					Metadata: metadataObj,
+					Post:     markdown,
+				}
+				templ := template.Must(template.New("editForm").Parse(editForm))
+				buffer := new(bytes.Buffer)
+				templ.Execute(buffer, payload)
+				return events.APIGatewayProxyResponse{
+					StatusCode: http.StatusOK,
+					Headers: map[string]string{
+						"Access-Control-Allow-Origin":  "*",
+						"Access-Control-Allow-Methods": "POST, OPTIONS",
+						"Access-Control-Allow-Headers": "Content-Type, Authorization",
+					},
+					Body:            buffer.String(),
+					IsBase64Encoded: false,
+				}, nil
 			}
 			if err != nil {
 				return errorResponse(http.StatusInternalServerError, "Post Not Found"), nil

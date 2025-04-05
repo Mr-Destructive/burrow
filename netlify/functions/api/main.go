@@ -11,6 +11,7 @@ import (
 	"net/http"
 	"net/url"
 	"os"
+	"strings"
 
 	"github.com/aws/aws-lambda-go/events"
 	"github.com/aws/aws-lambda-go/lambda"
@@ -103,8 +104,12 @@ func handler(req events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse,
 			slug := fmt.Sprintf("%s%s/%s", prefixURL, queryParams["type"], queryParams["slug"])
 			log.Printf("Slug: %s", slug)
 			postsBySlug, err := queries.GetPostsBySlugType(ctx, slug)
-			log.Printf("Posts: %v", postsBySlug)
 			postType := queryParams["type"]
+			if len(postsBySlug) == 0 {
+				slug = strings.TrimPrefix(slug, postType)
+				postsBySlug, err = queries.GetPostsBySlugType(ctx, slug)
+				log.Printf("Slug: %s", slug)
+			}
 			for _, post := range postsBySlug {
 				log.Printf("Post: %v", post)
 				metadataObj := make(map[string]interface{})

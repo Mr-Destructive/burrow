@@ -12,6 +12,7 @@ CREATE TABLE IF NOT EXISTS posts (
     slug TEXT NOT NULL,
     body TEXT NOT NULL,
     metadata TEXT NOT NULL,
+    deleted BOOLEAN DEFAULT 0,
     created_at DEFAULT CURRENT_TIMESTAMP,
     updated_at DEFAULT CURRENT_TIMESTAMP,
     author_id INTEGER REFERENCES authors(id) NOT NULL

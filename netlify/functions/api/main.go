@@ -1,10 +1,12 @@
 package main
 
 import (
+	"bytes"
 	"context"
 	"database/sql"
 	"encoding/json"
 	"fmt"
+	"html/template"
 	"log"
 	"net/http"
 	"net/url"
@@ -17,6 +19,37 @@ import (
 	_ "github.com/tursodatabase/libsql-client-go/libsql"
 	"golang.org/x/crypto/bcrypt"
 )
+
+var editForm string = `
+<form id="postForm">
+    <div class="mb-4">
+        <label for="title" class="block text-lg font-medium">Title:</label>
+        <input type="text" value="{{ .Title }}" name="title" id="title" class="w-full p-2 border rounded-md shadow-sm" required>
+    </div>
+
+    <div class="mb-4">
+        <label for="metadata" class="block text-lg font-medium">Metadata (JSON):</label>
+        <textarea name="metadata" value="{{ .Metadata }}" id="metadata" rows="4" class="w-full p-2 border rounded-md shadow-sm" placeholder='{"key": "value"}'></textarea>
+    </div>
+
+    <div class="mb-4">
+        <label for="content" class="block text-lg font-medium">Body (Markdown):</label>
+        <textarea name="content" id="content" rows="6" class="w-full p-2 border rounded-md shadow-sm" value="{{ .Content }}">{{.Content}}</textarea>
+    </div>
+
+    <div class="mb-4">
+        <label for="username" class="block text-lg font-medium">Username:</label>
+        <input type="text" name="username" id="username" class="w-full p-2 border rounded-md shadow-sm" required>
+    </div>
+
+    <div class="mb-6">
+        <label for="password" class="block text-lg font-medium">Password:</label>
+        <input type="password" name="password" id="password" class="w-full p-2 border rounded-md shadow-sm" required>
+    </div>
+
+    <button type="submit" class="w-full p-3 bg-blue-500 text-white rounded-md shadow-lg focus:outline-none focus:ring-2 hover:bg-blue-600">Submit</button>
+</form>
+`
 
 func main() {
 	lambda.Start(handler)
@@ -52,9 +85,55 @@ func handler(req events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse,
 		return errorResponse(http.StatusInternalServerError, "Database connection failed"), nil
 	}
 
+	queryParams := make(map[string]string)
+	if req.QueryStringParameters != nil {
+		queryParams = req.QueryStringParameters
+	}
+
 	var payload plugins.Payload
 	log.Printf("Headers: %v", req.Headers)
 	log.Printf("hx-request??? %v", req.Headers["hx-request"])
+	if queryParams["method"] == "edit" {
+		if req.HTTPMethod == http.MethodGet {
+			postsBySlug, err := queries.GetPostsBySlugType(ctx, queryParams["slug"])
+			postType := queryParams["type"]
+			for _, post := range postsBySlug {
+				metadataObj := make(map[string]interface{})
+				err = json.Unmarshal([]byte(post.Metadata), &metadataObj)
+				if err != nil {
+					return errorResponse(http.StatusInternalServerError, "Invalid metadata Payload"), nil
+				}
+				if metadataObj["type"] == postType {
+					payload = plugins.Payload{
+						Title:    post.Title,
+						Metadata: metadataObj,
+						Post:     post.Body,
+					}
+					templ := template.Must(template.New("editForm").Parse(editForm))
+					buffer := new(bytes.Buffer)
+					templ.Execute(buffer, payload)
+					return events.APIGatewayProxyResponse{
+						StatusCode: http.StatusOK,
+						Headers: map[string]string{
+							"Access-Control-Allow-Origin":  "*",
+							"Access-Control-Allow-Methods": "POST, OPTIONS",
+							"Access-Control-Allow-Headers": "Content-Type, Authorization",
+						},
+						Body:            buffer.String(),
+						IsBase64Encoded: false,
+					}, nil
+				}
+			}
+			if err != nil {
+				return errorResponse(http.StatusInternalServerError, "Post Not Found"), nil
+			}
+		} else if req.HTTPMethod == http.MethodPost {
+			err = json.Unmarshal([]byte(req.Body), &payload)
+			if err != nil {
+				return errorResponse(http.StatusInternalServerError, "Invalid Payload"), nil
+			}
+		}
+	}
 	if req.Headers["hx-request"] == "true" {
 		formData, err := url.ParseQuery(req.Body)
 		if err != nil {

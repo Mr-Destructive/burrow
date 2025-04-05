@@ -96,8 +96,13 @@ func handler(req events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse,
 	log.Printf("queryParams??? %v", queryParams)
 	if queryParams["method"] == "edit" {
 		if req.HTTPMethod == http.MethodGet {
-			log.Printf("Slug: %v", queryParams["slug"])
-			postsBySlug, err := queries.GetPostsBySlugType(ctx, queryParams["slug"])
+			var prefixURL string = ""
+			if prefixURL, ok := queryParams["prefixURL"]; ok {
+				prefixURL = prefixURL
+			}
+			slug := fmt.Sprintf("%s%s/%s", prefixURL, queryParams["type"], queryParams["slug"])
+			log.Printf("Slug: %s", slug)
+			postsBySlug, err := queries.GetPostsBySlugType(ctx, slug)
 			log.Printf("Posts: %v", postsBySlug)
 			postType := queryParams["type"]
 			for _, post := range postsBySlug {

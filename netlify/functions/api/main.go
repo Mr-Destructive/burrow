@@ -115,15 +115,18 @@ func handler(req events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse,
 			for _, post := range postsBySlug {
 				metadataObj := make(map[string]interface{})
 				err = json.Unmarshal([]byte(post.Metadata), &metadataObj)
+                log.Printf("Metadata: %v", metadataObj)
+                log.Printf("Error: %v", err)
 				if err != nil {
 					return errorResponse(http.StatusInternalServerError, "Invalid metadata Payload"), nil
 				}
 				markdown, err := htmltomarkdown.ConvertString(post.Body)
+                log.Printf("Markdown: %v", markdown)
+                log.Printf("Error: %v", err)
 				if err != nil {
 					return errorResponse(http.StatusInternalServerError, "Invalid metadata Payload"), nil
 				}
-				post.Body = markdown
-				if metadataObj["type"] == postType {
+				//if metadataObj["type"] == postType {
 					payload = plugins.Payload{
 						Title:    post.Title,
 						Metadata: metadataObj,
@@ -142,7 +145,6 @@ func handler(req events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse,
 						Body:            buffer.String(),
 						IsBase64Encoded: false,
 					}, nil
-				}
 			}
 			if err != nil {
 				return errorResponse(http.StatusInternalServerError, "Post Not Found"), nil

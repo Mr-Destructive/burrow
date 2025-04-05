@@ -93,6 +93,7 @@ func handler(req events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse,
 	var payload plugins.Payload
 	log.Printf("Headers: %v", req.Headers)
 	log.Printf("hx-request??? %v", req.Headers["hx-request"])
+	log.Printf("queryParams??? %v", queryParams)
 	if queryParams["method"] == "edit" {
 		if req.HTTPMethod == http.MethodGet {
 			postsBySlug, err := queries.GetPostsBySlugType(ctx, queryParams["slug"])

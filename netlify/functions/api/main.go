@@ -96,14 +96,20 @@ func handler(req events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse,
 	log.Printf("queryParams??? %v", queryParams)
 	if queryParams["method"] == "edit" {
 		if req.HTTPMethod == http.MethodGet {
+			log.Printf("Slug: %v", queryParams["slug"])
 			postsBySlug, err := queries.GetPostsBySlugType(ctx, queryParams["slug"])
+			log.Printf("Posts: %v", postsBySlug)
 			postType := queryParams["type"]
 			for _, post := range postsBySlug {
+				log.Printf("Post: %v", post)
 				metadataObj := make(map[string]interface{})
 				err = json.Unmarshal([]byte(post.Metadata), &metadataObj)
+				log.Printf("Metadata: %v", metadataObj)
+				log.Printf("Err : %v", err)
 				if err != nil {
 					return errorResponse(http.StatusInternalServerError, "Invalid metadata Payload"), nil
 				}
+				log.Printf("PostType: %v", postType)
 				if metadataObj["type"] == postType {
 					payload = plugins.Payload{
 						Title:    post.Title,
@@ -113,6 +119,7 @@ func handler(req events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse,
 					templ := template.Must(template.New("editForm").Parse(editForm))
 					buffer := new(bytes.Buffer)
 					templ.Execute(buffer, payload)
+					log.Printf("Buffer: %v", buffer.String())
 					return events.APIGatewayProxyResponse{
 						StatusCode: http.StatusOK,
 						Headers: map[string]string{

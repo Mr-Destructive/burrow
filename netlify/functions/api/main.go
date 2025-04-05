@@ -13,7 +13,7 @@ import (
 	"os"
 	"strings"
 
-	html2markdown "github.com/JohannesKaufmann/html-to-markdown"
+	htmltomarkdown "github.com/JohannesKaufmann/html-to-markdown/v2"
 	"github.com/aws/aws-lambda-go/events"
 	"github.com/aws/aws-lambda-go/lambda"
 	"github.com/mr-destructive/burrow/plugins"
@@ -116,7 +116,7 @@ func handler(req events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse,
 				if err != nil {
 					return errorResponse(http.StatusInternalServerError, "Invalid metadata Payload"), nil
 				}
-				markdown, err := html2markdown.ConvertString(post.Body)
+				markdown, err := htmltomarkdown.ConvertString(post.Body)
 				if err != nil {
 					return errorResponse(http.StatusInternalServerError, "Invalid metadata Payload"), nil
 				}

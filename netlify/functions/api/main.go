@@ -116,9 +116,7 @@ func handler(req events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse,
 				if err != nil {
 					return errorResponse(http.StatusInternalServerError, "Invalid metadata Payload"), nil
 				}
-
-				converter := html2markdown.NewConverter("", true)
-				markdown, err := converter.ConvertString(post.Body)
+				markdown, err := html2markdown.ConvertString(post.Body)
 				if err != nil {
 					return errorResponse(http.StatusInternalServerError, "Invalid metadata Payload"), nil
 				}

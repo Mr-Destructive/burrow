@@ -17,3 +17,6 @@ VALUES (?, ?, ?, ?, ?) RETURNING *;
 
 -- name: GetPostsBySlugType :many
 SELECT * FROM posts WHERE slug = ? AND deleted = 0;
+
+-- name: GetAllPosts :many
+SELECT * FROM posts WHERE deleted = 0;

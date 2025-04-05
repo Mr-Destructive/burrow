@@ -13,6 +13,7 @@ import (
 	"os"
 	"strings"
 
+	"github.com/JohannesKaufmann/html-to-markdown"
 	"github.com/aws/aws-lambda-go/events"
 	"github.com/aws/aws-lambda-go/lambda"
 	"github.com/mr-destructive/burrow/plugins"
@@ -35,7 +36,7 @@ var editForm string = `
 
     <div class="mb-4">
         <label for="content" class="block text-lg font-medium">Body (Markdown):</label>
-        <textarea name="content" id="content" rows="6" class="w-full p-2 border rounded-md shadow-sm" value="{{ .Content }}">{{.Content}}</textarea>
+        <textarea name="content" id="content" rows="6" class="w-full p-2 border rounded-md shadow-sm" value="{{ .Content }}">{{ .Post }}</textarea>
     </div>
 
     <div class="mb-4">
@@ -94,7 +95,6 @@ func handler(req events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse,
 	var payload plugins.Payload
 	log.Printf("Headers: %v", req.Headers)
 	log.Printf("hx-request??? %v", req.Headers["hx-request"])
-	log.Printf("queryParams??? %v", queryParams)
 	if queryParams["method"] == "edit" {
 		if req.HTTPMethod == http.MethodGet {
 			var prefixURL string = ""
@@ -106,32 +106,32 @@ func handler(req events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse,
 			postsBySlug, err := queries.GetPostsBySlugType(ctx, slug)
 			postType := queryParams["type"]
 			if len(postsBySlug) == 0 {
-				slug = strings.TrimPrefix(queryParams["slug"], "/")
 				slug = strings.TrimPrefix(slug, postType)
-				slug = strings.TrimPrefix(slug, "/")
 				postsBySlug, err = queries.GetPostsBySlugType(ctx, slug)
 				log.Printf("Slug: %s", slug)
 			}
 			for _, post := range postsBySlug {
-				log.Printf("Post: %v", post)
 				metadataObj := make(map[string]interface{})
 				err = json.Unmarshal([]byte(post.Metadata), &metadataObj)
-				log.Printf("Metadata: %v", metadataObj)
-				log.Printf("Err : %v", err)
 				if err != nil {
 					return errorResponse(http.StatusInternalServerError, "Invalid metadata Payload"), nil
 				}
-				log.Printf("PostType: %v", postType)
+
+				converter := html2markdown.NewConverter("", true)
+				markdown, err := converter.ConvertString(post.Body)
+				if err != nil {
+					return errorResponse(http.StatusInternalServerError, "Invalid metadata Payload"), nil
+				}
+				post.Body = markdown
 				if metadataObj["type"] == postType {
 					payload = plugins.Payload{
 						Title:    post.Title,
 						Metadata: metadataObj,
-						Post:     post.Body,
+						Post:     markdown,
 					}
 					templ := template.Must(template.New("editForm").Parse(editForm))
 					buffer := new(bytes.Buffer)
 					templ.Execute(buffer, payload)
-					log.Printf("Buffer: %v", buffer.String())
 					return events.APIGatewayProxyResponse{
 						StatusCode: http.StatusOK,
 						Headers: map[string]string{

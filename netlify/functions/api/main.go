@@ -13,7 +13,7 @@ import (
 	"os"
 	"strings"
 
-	"github.com/JohannesKaufmann/html-to-markdown"
+	html2markdown "github.com/JohannesKaufmann/html-to-markdown"
 	"github.com/aws/aws-lambda-go/events"
 	"github.com/aws/aws-lambda-go/lambda"
 	"github.com/mr-destructive/burrow/plugins"

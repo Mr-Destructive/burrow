@@ -106,7 +106,9 @@ func handler(req events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse,
 			postsBySlug, err := queries.GetPostsBySlugType(ctx, slug)
 			postType := queryParams["type"]
 			if len(postsBySlug) == 0 {
+				slug = strings.TrimPrefix(slug, "/")
 				slug = strings.TrimPrefix(slug, postType)
+				slug = strings.TrimPrefix(slug, "/")
 				postsBySlug, err = queries.GetPostsBySlugType(ctx, slug)
 				log.Printf("Slug: %s", slug)
 			}

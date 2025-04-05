@@ -1,0 +1,245 @@
+<!DOCTYPE HTML>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Post</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <style>
+        :root {
+            --bg-color: #ffffff;
+            --text-color: #333333;
+            --secondary-text-color: ;
+            --link-normal: #007bff;
+            --link-hover: #0056b3;
+            --link-active: #003a75;
+            --quote-color: #999999;
+            --code-bg-color: #dddddd;
+            --code-border-color: #ced4da;
+            --code-text-color: #444444;
+            --code-comment-color: #808080;
+            --code-keyword-color: #008000;
+            --code-string-color: #000080;
+            --code-number-color: #000000;
+            --code-variable-color: #000000;
+            --code-function-color: #000000;
+        }
+
+        .secondary-theme{
+            --bg-color: #121212;
+            --text-color: #ffffff;
+            --secondary-text-color: #ff6600;
+            --link-normal: #ff6600;
+            --link-hover: #4682b4;
+            --link-active: #00008b;
+            --quote-color: #a9a9a9;
+            --code-bg-color: #333333;
+            --code-border-color: #444444;
+            --code-text-color: #ffffff;
+            --code-comment-color: #b0b0b0;
+            --code-keyword-color: #32cd32;
+            --code-string-color: #ff6347;
+            --code-number-color: #d3d3d3;
+            --code-variable-color: #b0e0e6;
+            --code-function-color: #ff4500;
+        }
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-family: 'SF Mono', Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace;
+            line-height: 1.6;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        header {
+            border-bottom: 1px solid var(--border-color);
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+        }
+
+        h1, h2, h3 {
+            color: var(--secondary-text-color);
+        }
+
+        .Site-title {
+            font-size: 1.8rem;
+            margin: 0;
+        }
+
+        .Site-title a {
+            color: var(--accent-color);
+            text-decoration: none;
+            transition: color 0.2s ease;
+        }
+
+        .Site-title a:hover {
+            color: var(--hover-color);
+        }
+
+        .Post-meta {
+            color: var(--secondary-text);
+            font-size: 0.9rem;
+            margin: 1rem 0;
+        }
+
+        article {
+            margin: 2rem 0;
+        }
+
+        pre {
+            background-color: var(--code-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            padding: 1rem;
+            overflow-x: auto;
+            margin: 1.5rem 0;
+        }
+
+        code {
+            font-family: 'SF Mono', Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace;
+            font-size: 0.9em;
+        }
+
+        p code {
+            background-color: var(--inline-code-bg);
+            padding: 0.2em 0.4em;
+            border-radius: 3px;
+        }
+
+        blockquote {
+            border-left: 3px solid var(--accent-color);
+            margin: 1.5rem 0;
+            padding-left: 1rem;
+            color: var(--secondary-text);
+        }
+
+        a {
+            color: var(--link-normal);
+            text-decoration: none;
+            transition: color 0.2s ease;
+        }
+
+        a:hover {
+            color: var(--hover-color);
+        }
+
+        .Hljs-comment { color: var(--code-comment); } 
+        .Hljs-keyword { color: var(--code-keyword); }
+        .Hljs-string { color: var(--code-string); }
+        .Hljs-number { color: var(--code-number); }
+        .Hljs-function { color: var(--code-function); }
+        .Hljs-variable { color: var(--code-variable); }
+
+        button, .Button {
+            background-color: var(--accent-color);
+            border: none;
+            border-radius: 6px;
+            color: var(--bg-color);
+            cursor: pointer;
+            font-family: inherit;
+            font-size: 0.9rem;
+            padding: 0.5rem 1rem;
+            transition: background-color 0.2s ease;
+        }
+
+        button:hover, .Button:hover {
+            background-color: var(--hover-color);
+        }
+
+
+         
+        @media (max-width: 768px) {
+            body {
+                padding: 1rem;
+            }
+
+            pre {
+                margin: 1rem -1rem;
+                border-radius: 0;
+            }
+        }
+        #theme-toggle {
+            background-color: var(--link-normal);
+            border: none;
+            border-radius: 6px;
+            color: var(--bg-color);
+            cursor: pointer;
+            font-family: inherit;
+            font-size: 1rem;
+            padding: 0.5rem 1.5rem;
+            transition: background-color 0.2s ease;
+        }
+
+        #theme-toggle:hover {
+            background-color: var(--link-hover);
+        }
+    .markdown-preview {
+        border: 1px solid #ddd;
+        padding: 10px;
+        margin-top: 10px;
+        min-height: 200px;
+        background-color: #f9f9f9;
+        white-space: pre-wrap;
+        word-wrap: break-word;
+        background-color: var(--bg-color);
+        color: var(--text-color);
+    }
+
+        input, textarea {
+            background-color: var(--input-bg);
+            color: var(--input-text);
+            border: 1px solid var(--secondary-text-color);
+        }
+    </style>
+    <script src="../theme.js"></script>
+    <script src="https://unpkg.com/htmx.org@1.9.4"></script>
+</head>
+<body class="">
+    <button id="theme-toggle" class="p-2 rounded-md shadow-lg ">Toggle Theme</button>
+    <a href="/" class="hover:underline mb-4">Back to Home</a>
+    <div class="container mx-auto p-8 rounded-lg shadow-lg max-w-4xl">
+        <h1 class="text-3xl font-semibold text-center mb-6">Add Post</h1>
+        <form hx-post="https://burrow-cms-dev.netlify.app/.netlify/functions/api">
+            <div class="mb-4">
+                <label for="title" class="block text-lg font-medium">Title:</label>
+                <input type="text" name="title" id="title" class="w-full p-2 border rounded-md shadow-sm" required>
+            </div>
+            
+            <div class="mb-4">
+                <label for="metadata" class="block text-lg font-medium">Metadata (JSON):</label>
+                <textarea name="metadata" id="metadata" rows="4" class="w-full p-2 border rounded-md shadow-sm" placeholder='{"key": "value"}'></textarea>
+            </div>
+
+            <div class="mb-4">
+                <label for="content" class="block text-lg font-medium">Body (Markdown):</label>
+                <textarea name="content" id="content" rows="6" class="w-full p-2 border rounded-md shadow-sm" oninput="previewMarkdown()"></textarea>
+            </div>
+
+            <div class="markdown-preview" id="markdownPreview"></div>
+
+            <div class="mb-4">
+                <label for="username" class="block text-lg font-medium">Username:</label>
+                <input type="text" name="username" id="username" class="w-full p-2 border rounded-md shadow-sm" required>
+            </div>
+
+            <div class="mb-6">
+                <label for="password" class="block text-lg font-medium">Password:</label>
+                <input type="password" name="password" id="password" class="w-full p-2 border rounded-md shadow-sm" required>
+            </div>
+
+            <button type="submit" class="w-full p-3 bg-blue-500 text-white rounded-md shadow-lg focus:outline-none focus:ring-2 hover:bg-blue-600">Submit</button>
+        </form>
+    </div>
+
+    <script>
+        function previewMarkdown() {
+            const markdownContent = document.getElementById("content").value;
+            const preview = document.getElementById("markdownPreview");
+            preview.innerHTML = marked.parse(markdownContent); 
+        }
+    </script>
+</body>
+</html>

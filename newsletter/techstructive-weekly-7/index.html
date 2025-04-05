@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Techstructive Blog | Techstructive Weekly #7</title>
+    <style>
+            :root {
+                --bg-color: #ffffff;
+                --text-color: #333333;
+                --secondary-text-color: ;
+                --link-normal: #007bff;
+                --link-hover: #0056b3;
+                --link-active: #003a75;
+                --quote-color: #999999;
+                --code-bg-color: #dddddd;
+                --code-border-color: #ced4da;
+                --code-text-color: #444444;
+                --code-comment-color: #808080;
+                --code-keyword-color: #008000;
+                --code-string-color: #000080;
+                --code-number-color: #000000;
+                --code-variable-color: #000000;
+                --code-function-color: #000000;
+            }
+
+             
+            .secondary-theme {
+                --bg-color: #121212;
+                --text-color: #ffffff;
+                --secondary-text-color: #ff6600;
+                --link-normal: #ff6600;
+                --link-hover: #4682b4;
+                --link-active: #00008b;
+                --quote-color: #a9a9a9;
+                --code-bg-color: #333333;
+                --code-border-color: #444444;
+                --code-text-color: #ffffff;
+                --code-comment-color: #b0b0b0;
+                --code-keyword-color: #32cd32;
+                --code-string-color: #ff6347;
+                --code-number-color: #d3d3d3;
+                --code-variable-color: #b0e0e6;
+                --code-function-color: #ff4500;
+            }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-family: 'SF Mono', Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace;
+            line-height: 1.6;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        header {
+            border-bottom: 1px solid var(--border-color);
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+        }
+
+        h1, h2, h3, h4, h5, h6 {
+            color: var(--secondary-text-color);
+        }
+
+        .Site-title {
+            font-size: 1.8rem;
+            margin: 0;
+        }
+
+        .Site-title a {
+            color: var(--accent-color);
+            text-decoration: none;
+            transition: color 0.2s ease;
+        }
+
+        .Site-title a:hover {
+            color: var(--hover-color);
+        }
+
+        .Post-meta {
+            color: var(--secondary-text);
+            font-size: 0.9rem;
+            margin: 1rem 0;
+        }
+
+        article {
+            margin: 2rem 0;
+        }
+
+        pre {
+            background-color: var(--code-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            padding: 1rem;
+            overflow-x: auto;
+            margin: 1.5rem 0;
+        }
+
+        code {
+            font-family: 'SF Mono', Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace;
+            font-size: 0.9em;
+        }
+
+        p code {
+            background-color: var(--inline-code-bg);
+            padding: 0.2em 0.4em;
+            border-radius: 3px;
+        }
+
+        blockquote {
+            border-left: 3px solid var(--accent-color);
+            margin: 1.5rem 0;
+            padding-left: 1rem;
+            color: var(--secondary-text);
+        }
+
+        a {
+            color: var(--link-normal);
+            text-decoration: none;
+            transition: color 0.2s ease;
+        }
+
+        a:hover {
+            color: var(--hover-color);
+        }
+
+        .Hljs-comment { color: var(--code-comment); } 
+        .Hljs-keyword { color: var(--code-keyword); }
+        .Hljs-string { color: var(--code-string); }
+        .Hljs-number { color: var(--code-number); }
+        .Hljs-function { color: var(--code-function); }
+        .Hljs-variable { color: var(--code-variable); }
+
+        button, .Button {
+            background-color: var(--accent-color);
+            border: none;
+            border-radius: 6px;
+            color: var(--bg-color);
+            cursor: pointer;
+            font-family: inherit;
+            font-size: 0.9rem;
+            padding: 0.5rem 1rem;
+            transition: background-color 0.2s ease;
+        }
+
+        button:hover, .Button:hover {
+            background-color: var(--hover-color);
+        }
+
+
+         
+        @media (max-width: 768px) {
+            body {
+                padding: 1rem;
+            }
+
+            pre {
+                margin: 1rem -1rem;
+                border-radius: 0;
+            }
+        }
+        #theme-toggle {
+            background-color: var(--link-normal);
+            border: none;
+            border-radius: 6px;
+            color: var(--bg-color);
+            cursor: pointer;
+            font-family: inherit;
+            font-size: 1rem;
+            padding: 0.5rem 1.5rem;
+            transition: background-color 0.2s ease;
+        }
+
+        #theme-toggle:hover {
+            background-color: var(--link-hover);
+        }
+
+        code {
+          font-family: monospace;
+          padding: 2px 4px;
+          border-radius: 4px;
+        }
+
+pre {
+    background-color: var(--code-bg-color, #f5f5f5);
+    border: 1px solid var(--code-border-color, #d1d1d1);
+    border-radius: 6px;
+    padding: 1rem;
+    overflow-x: auto;
+    margin: 1.5rem 0;
+}
+
+code {
+    font-family: 'SF Mono', Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace;
+    font-size: 0.9em;
+    color: var(--code-text-color, #fff);
+}
+
+p code {
+    color: var(--code-text-color, #000);
+    background-color: var(--code-bg-color, #444444);
+    padding: 0.2em 0.4em;
+    border-radius: 3px;
+}
+
+ 
+.Hljs-comment { color: var(--code-comment-color, #7d7d7d); }
+.Hljs-keyword { color: var(--code-keyword-color, #005cc5); }
+.Hljs-string { color: var(--code-string-color, #d73a49); }
+.Hljs-number { color: var(--code-number-color, #e36209); }
+.Hljs-variable { color: var(--code-variable-color, #6f42c1); }
+.Hljs-function { color: var(--code-function-color, #005cc5); }
+
+ 
+.secondary-theme pre {
+    background-color: var(--code-bg-color, #1e1e1e);
+    border: 1px solid var(--code-border-color, #3c3c3c);
+}
+
+.secondary-theme .Hljs-comment { color: var(--code-comment-color, #6a737d); }
+.secondary-theme .Hljs-keyword { color: var(--code-keyword-color, #569cd6); }
+.secondary-theme .Hljs-string { color: var(--code-string-color, #ce9178); }
+.secondary-theme .Hljs-number { color: var(--code-number-color, #b5cea8); }
+.secondary-theme .Hljs-variable { color: var(--code-variable-color, #9cdcfe); }
+.secondary-theme .Hljs-function { color: var(--code-function-color, #dcdcaa); }
+    </style>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const themeToggle = document.getElementById('theme-toggle');
+            const body = document.body;
+
+            const currentTheme = localStorage.getItem('theme') || 'light';
+
+            if (currentTheme === 'secondary') {
+                body.classList.add('secondary-theme');
+            }
+
+            themeToggle.addEventListener('click', () => {
+                if (body.classList.contains('secondary-theme')) {
+                    body.classList.remove('secondary-theme');
+                    localStorage.setItem('theme', 'light');
+                } else {
+                    body.classList.add('secondary-theme');
+                    localStorage.setItem('theme', 'secondary');
+                }
+            });
+        });
+
+        document.addEventListener("DOMContentLoaded", () => {
+            document.querySelectorAll("pre").forEach((pre) => {
+                const button = document.createElement("button");
+                button.classList.add("copy-btn");
+                button.textContent = "Copy";
+                
+                button.addEventListener("click", () => {
+                    const code = pre.querySelector("code");
+                    if (!code) return;
+
+                    const textToCopy = code.innerText || code.textContent;
+                    navigator.clipboard.writeText(textToCopy).then(() => {
+                        button.textContent = "Copied!";
+                        button.classList.add("copied");
+
+                        setTimeout(() => {
+                            button.textContent = "Copy";
+                            button.classList.remove("copied");
+                        }, 1500);
+                    });
+                });
+
+                pre.appendChild(button);
+            });
+        });
+    </script>
+</head>
+<body>
+    <header>
+        <h1 class="site-title"><a href="/">Techstructive Blog</a></h1>
+        <button id="theme-toggle" aria-label="Theme">Theme</button>
+    </header>
+
+    <main class="container">
+        <article class="blog-post">
+            <h1>Techstructive Weekly #7</h1>
+            <div class="post-meta">
+                Published on 📅 <time datetime="2024-09-14">2024-09-14</time>
+            </div>
+            <div class="post-meta">
+                Type: <a href="/newsletter">newsletter</a>
+            </div>
+            <div class="post-meta">
+                <span class="post-series-label"> 🏷️ Tags:</span>
+                
+            </div>
+            
+            <hr>
+            <div class="post-content">
+                <h2>Week #7</h2>
+<p>This week was a bit mentally tough but technically productive, pushed some efforts to get the project up and integrated fully and tested it out. Not good with the numbers but overall, that looked promising, and again excited for next week’s challenge.</p>
+<p>This week is special because I created and uploaded my first YouTube video! On Sunday, I did everything from recording to creating the thumbnail, voiceover, and editing. It took about six hours for a six-minute video, but it’s a solid start for future videos. I’d love any feedback you have, so please check it out!</p>
+<p>Thanks for reading Techstructive Weekly! Subscribe for free to receive new posts and support my work.</p>
+<h2>Quote of the week</h2>
+<blockquote>
+<p>“You don’t have to be great to start, but you have to start to be great.”</p>
+<p>— Zig Ziglar</p>
+</blockquote>
+<p>I created my first YouTube video, it might not be the greatest one, but surely one day one video will be. Pondering over 5 years from now, if that video becomes great, I’ll come back to my first video and laugh—where I started, with a humble and overlooked video. But that will be the one that leads me to that.</p>
+<h2>Read</h2>
+<ul>
+<li>
+<p><a href="https://eric-sandosham.medium.com/my-one-year-writing-journey-9dc4104676b4"><strong>One-Year Writing Journey</strong></a><strong>:</strong> This is really a good read of a person trying to be consistent at writing, I have personally done this for over two years. I found it really helpful in gaining experience and problem-solving abilities.</p>
+</li>
+<li>
+<p><a href="https://collabfund.com/blog/my-month-without-a-smartphone"><strong>Month Without a Smartphone</strong></a><strong>:</strong> I could feel myself, but in place of his son, I depicted my mother scolding me to put the phone down. I mean there is nothing urgent or important on the phone, but feels like I am going to miss something important at any hour. This habit needs to be taken care of by me.</p>
+</li>
+<li>
+<p><strong>Writing a book in the age of Open Source:</strong> There are so many good resources and advice on starting and investing in the craft of writing.</p>
+</li>
+</ul>
+<p>![](https://substack-post-media.s3.amazonaws.com/public/images/bd4cee08-a91b-427b-a13c-201e244e8774_1024x1024.png align=&quot;left&quot;)</p>
+<p><a href="https://blog.incrementalforgetting.tech/p/sculpting-a-book-the-chisel?utm_source=substack&amp;utm_campaign=post_embed&amp;utm_medium=web">Incremental forgetting</a></p>
+<p><a href="https://blog.incrementalforgetting.tech/p/sculpting-a-book-the-chisel?utm_source=substack&amp;utm_campaign=post_embed&amp;utm_medium=web">Writing a book in the age of open source</a></p>
+<p><a href="https://blog.incrementalforgetting.tech/p/sculpting-a-book-the-chisel?utm_source=substack&amp;utm_campaign=post_embed&amp;utm_medium=web">About a year ago, Maxim Schepelin and I set out to write our first book. A book for aspiring Engineering Managers…</a></p>
+<p><a href="https://blog.incrementalforgetting.tech/p/sculpting-a-book-the-chisel?utm_source=substack&amp;utm_campaign=post_embed&amp;utm_medium=web">Read more</a></p>
+<p><a href="https://blog.incrementalforgetting.tech/p/sculpting-a-book-the-chisel?utm_source=substack&amp;utm_campaign=post_embed&amp;utm_medium=web">3 months ago · 6 likes · Dunya Kirkali</a></p>
+<h2>Wrote/Created</h2>
+<ul>
+<li>Youtube Video: How to connect a remote LibSQL Databsae on Turso with a Golang Application/Program:</li>
+</ul>
+<h2>Watched</h2>
+<ul>
+<li><strong>LLMS are like wired, over-confident Interns</strong>:<br>
+LLMs are powerful but not quite there yet, they are idiots sometimes, and they literally do what was not said to be done (they can’t push to prod yet)</li>
+</ul>
+<p>![](https://substack-post-media.s3.amazonaws.com/public/images/9e78d0e8-1d64-47c3-a6c7-f1469f3ed8c5_500x500.png align=&quot;left&quot;)</p>
+<p><a href="https://softwaremisadventures.com/p/simon-willison-llm-weird-intern?utm_source=substack&amp;utm_campaign=post_embed&amp;utm_medium=web">Software Misadventures Podcast</a></p>
+<p><a href="https://softwaremisadventures.com/p/simon-willison-llm-weird-intern?utm_source=substack&amp;utm_campaign=post_embed&amp;utm_medium=web">LLMs are like your weird, over-confident intern | Simon Willison (Datasette)</a></p>
+<p><a href="https://softwaremisadventures.com/p/simon-willison-llm-weird-intern?utm_source=substack&amp;utm_campaign=post_embed&amp;utm_medium=web">Read more</a></p>
+<p><a href="https://softwaremisadventures.com/p/simon-willison-llm-weird-intern?utm_source=substack&amp;utm_campaign=post_embed&amp;utm_medium=web">3 months ago · 1 like · Ronak Nathani and Guang Yang</a></p>
+<ul>
+<li>
+<p>Nobody Cares about Technical GitHub Projects:<br>
+Project clones are not gonna help your resume, something that you taught and build just to solve a problem you faced or just writing something from scratch, probably is going to land you somewhere. That is the gist, making GitHub projects is not the only deal, making something that you learn from should be.</p>
+</li>
+<li>
+<p><strong>Safe and Best Way to Open Files in Python</strong>: <br>
+I don’t thing anyone uses any other approach than <code>with</code>, for dealing with files in python, if he does then, you probably need to think again.</p>
+</li>
+<li>
+<p><strong>Why you should learn Golang as a first programming language</strong>:<br>
+Golang is such a programming language that just lands in the middle of complex syntax and speed. There is a garbage collector which makes it developer friendly most of the time, yet not being interpreted like python and javascript, which makes it faster, not just executing wise but development time as well. Totally worth learning as the first programming language.</p>
+</li>
+</ul>
+<h2>Learned</h2>
+<ul>
+<li>
+<p><a href="https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.iterrows.html">Iterating over a dataframe’s rows using iterrows</a>:<br>
+I wanted to iterate over all the df rows and also needed to get the index of each of them, so iterrows is so convenient to use.</p>
+</li>
+<li>
+<p>Golang: Connecting a remote LibSQL database</p>
+<ul>
+<li>
+<p>Using libsql-client for golang</p>
+</li>
+<li>
+<p>Sync local libsql/sqlite database with Embedded replicas.</p>
+</li>
+</ul>
+</li>
+</ul>
+<p>Next week will have an article about this things as well as a video.</p>
+<h2>Tech News</h2>
+<ul>
+<li><a href="https://openai.com/index/introducing-openai-o1-preview/">OpenAI released o1</a>: A model series for reasoning and solving scientific problems. People suggesting it to be better than they expected. But I think, the LLMs have disappointed us so much that even a little spike causes us to think its a big deal, it is a revolutionary model, but wait for 6 months and read this blog again.</li>
+</ul>
+<p>For more news, follow the <a href="https://mailchi.mp/hackernewsletter/716">Hackernewsletter</a> (Issue 716 is not out yet as of my publishing but should be soon) and for daily developer articles, join <a href="http://daily.dev">daily.dev</a></p>
+<p>That’s it from this week, hope you did well this week, and have a happy week and weekend ahead!</p>
+<p>Thank you for reading, let’s catch up in the next week.</p>
+<p>Happy Coding :)</p>
+<p>Thanks for reading Techstructive Weekly! Subscribe for free to receive new posts and support my work.</p>
+
+            </div>
+        </article>
+    </main>
+    
+    <footer class="site-footer">
+        <div class="container">
+            <p>&copy; Techstructive Blog. All rights reserved.</p>
+        </div>
+    </footer>
+
+
+    <script>
+    </script>
+</body>
+</html>

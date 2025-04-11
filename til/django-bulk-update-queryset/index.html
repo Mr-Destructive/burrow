@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Techstructive Blog | Django Bulk Update QuerySet objects</title>
+    <style>
+            :root {
+                --bg-color: #ffffff;
+                --text-color: #333333;
+                --secondary-text-color: ;
+                --link-normal: #007bff;
+                --link-hover: #0056b3;
+                --link-active: #003a75;
+                --quote-color: #999999;
+                --code-bg-color: #dddddd;
+                --code-border-color: #ced4da;
+                --code-text-color: #444444;
+                --code-comment-color: #808080;
+                --code-keyword-color: #008000;
+                --code-string-color: #000080;
+                --code-number-color: #000000;
+                --code-variable-color: #000000;
+                --code-function-color: #000000;
+            }
+
+             
+            .secondary-theme {
+                --bg-color: #121212;
+                --text-color: #ffffff;
+                --secondary-text-color: #ff6600;
+                --link-normal: #ff6600;
+                --link-hover: #4682b4;
+                --link-active: #00008b;
+                --quote-color: #a9a9a9;
+                --code-bg-color: #333333;
+                --code-border-color: #444444;
+                --code-text-color: #ffffff;
+                --code-comment-color: #b0b0b0;
+                --code-keyword-color: #32cd32;
+                --code-string-color: #ff6347;
+                --code-number-color: #d3d3d3;
+                --code-variable-color: #b0e0e6;
+                --code-function-color: #ff4500;
+            }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-family: 'SF Mono', Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace;
+            line-height: 1.6;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        header {
+            border-bottom: 1px solid var(--border-color);
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+        }
+
+        h1, h2, h3, h4, h5, h6 {
+            color: var(--secondary-text-color);
+        }
+
+        .Site-title {
+            font-size: 1.8rem;
+            margin: 0;
+        }
+
+        .Site-title a {
+            color: var(--accent-color);
+            text-decoration: none;
+            transition: color 0.2s ease;
+        }
+
+        .Site-title a:hover {
+            color: var(--hover-color);
+        }
+
+        .Post-meta {
+            color: var(--secondary-text);
+            font-size: 0.9rem;
+            margin: 1rem 0;
+        }
+
+        article {
+            margin: 2rem 0;
+        }
+
+        pre {
+            background-color: var(--code-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            padding: 1rem;
+            overflow-x: auto;
+            margin: 1.5rem 0;
+        }
+
+        code {
+            font-family: 'SF Mono', Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace;
+            font-size: 0.9em;
+        }
+
+        p code {
+            background-color: var(--inline-code-bg);
+            padding: 0.2em 0.4em;
+            border-radius: 3px;
+        }
+
+        blockquote {
+            border-left: 3px solid var(--accent-color);
+            margin: 1.5rem 0;
+            padding-left: 1rem;
+            color: var(--secondary-text);
+        }
+
+        a {
+            color: var(--link-normal);
+            text-decoration: none;
+            transition: color 0.2s ease;
+        }
+
+        a:hover {
+            color: var(--hover-color);
+        }
+
+        .Hljs-comment { color: var(--code-comment); } 
+        .Hljs-keyword { color: var(--code-keyword); }
+        .Hljs-string { color: var(--code-string); }
+        .Hljs-number { color: var(--code-number); }
+        .Hljs-function { color: var(--code-function); }
+        .Hljs-variable { color: var(--code-variable); }
+
+        button, .Button {
+            background-color: var(--accent-color);
+            border: none;
+            border-radius: 6px;
+            color: var(--bg-color);
+            cursor: pointer;
+            font-family: inherit;
+            font-size: 0.9rem;
+            padding: 0.5rem 1rem;
+            transition: background-color 0.2s ease;
+        }
+
+        button:hover, .Button:hover {
+            background-color: var(--hover-color);
+        }
+
+
+         
+        @media (max-width: 768px) {
+            body {
+                padding: 1rem;
+            }
+
+            pre {
+                margin: 1rem -1rem;
+                border-radius: 0;
+            }
+        }
+        #theme-toggle {
+            background-color: var(--link-normal);
+            border: none;
+            border-radius: 6px;
+            color: var(--bg-color);
+            cursor: pointer;
+            font-family: inherit;
+            font-size: 1rem;
+            padding: 0.5rem 1.5rem;
+            transition: background-color 0.2s ease;
+        }
+
+        #theme-toggle:hover {
+            background-color: var(--link-hover);
+        }
+
+        code {
+          font-family: monospace;
+          padding: 2px 4px;
+          border-radius: 4px;
+        }
+
+pre {
+    background-color: var(--code-bg-color, #f5f5f5);
+    border: 1px solid var(--code-border-color, #d1d1d1);
+    border-radius: 6px;
+    padding: 1rem;
+    overflow-x: auto;
+    margin: 1.5rem 0;
+}
+
+code {
+    font-family: 'SF Mono', Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace;
+    font-size: 0.9em;
+    color: var(--code-text-color, #fff);
+}
+
+p code {
+    color: var(--code-text-color, #000);
+    background-color: var(--code-bg-color, #444444);
+    padding: 0.2em 0.4em;
+    border-radius: 3px;
+}
+
+ 
+.Hljs-comment { color: var(--code-comment-color, #7d7d7d); }
+.Hljs-keyword { color: var(--code-keyword-color, #005cc5); }
+.Hljs-string { color: var(--code-string-color, #d73a49); }
+.Hljs-number { color: var(--code-number-color, #e36209); }
+.Hljs-variable { color: var(--code-variable-color, #6f42c1); }
+.Hljs-function { color: var(--code-function-color, #005cc5); }
+
+ 
+.secondary-theme pre {
+    background-color: var(--code-bg-color, #1e1e1e);
+    border: 1px solid var(--code-border-color, #3c3c3c);
+}
+
+.secondary-theme .Hljs-comment { color: var(--code-comment-color, #6a737d); }
+.secondary-theme .Hljs-keyword { color: var(--code-keyword-color, #569cd6); }
+.secondary-theme .Hljs-string { color: var(--code-string-color, #ce9178); }
+.secondary-theme .Hljs-number { color: var(--code-number-color, #b5cea8); }
+.secondary-theme .Hljs-variable { color: var(--code-variable-color, #9cdcfe); }
+.secondary-theme .Hljs-function { color: var(--code-function-color, #dcdcaa); }
+    </style>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const themeToggle = document.getElementById('theme-toggle');
+            const body = document.body;
+
+            const currentTheme = localStorage.getItem('theme') || 'light';
+
+            if (currentTheme === 'secondary') {
+                body.classList.add('secondary-theme');
+            }
+
+            themeToggle.addEventListener('click', () => {
+                if (body.classList.contains('secondary-theme')) {
+                    body.classList.remove('secondary-theme');
+                    localStorage.setItem('theme', 'light');
+                } else {
+                    body.classList.add('secondary-theme');
+                    localStorage.setItem('theme', 'secondary');
+                }
+            });
+        });
+
+        document.addEventListener("DOMContentLoaded", () => {
+            document.querySelectorAll("pre").forEach((pre) => {
+                const button = document.createElement("button");
+                button.classList.add("copy-btn");
+                button.textContent = "Copy";
+                
+                button.addEventListener("click", () => {
+                    const code = pre.querySelector("code");
+                    if (!code) return;
+
+                    const textToCopy = code.innerText || code.textContent;
+                    navigator.clipboard.writeText(textToCopy).then(() => {
+                        button.textContent = "Copied!";
+                        button.classList.add("copied");
+
+                        setTimeout(() => {
+                            button.textContent = "Copy";
+                            button.classList.remove("copied");
+                        }, 1500);
+                    });
+                });
+
+                pre.appendChild(button);
+            });
+        });
+    </script>
+</head>
+<body>
+    <header>
+        <h1 class="site-title"><a href="/">Techstructive Blog</a></h1>
+        <button id="theme-toggle" aria-label="Theme">Theme</button>
+    </header>
+
+    <main class="container">
+        <article class="blog-post">
+            <h1>Django Bulk Update QuerySet objects</h1>
+            <div class="post-meta">
+                Published on 📅 <time datetime="2022-10-31">2022-10-31</time>
+            </div>
+            <div class="post-meta">
+                Type: <a href="/til">til</a>
+            </div>
+            <div class="post-meta">
+                <span class="post-series-label"> 🏷️ Tags:</span>
+                
+                <a href="/tags/django">#django</a>
+                
+                <a href="/tags/python">#python</a>
+                
+            </div>
+            
+            <hr>
+            <div class="post-content">
+                <p>Let's say, I have a lots of objects which I want to update with a particular field or fields. We can use the <a href="https://docs.djangoproject.com/en/4.1/ref/models/querysets/#bulk-update">bulk_update</a> method with the model name.</p>
+<pre><code class="language-python"># blog/models.py
+
+from django.db import models
+
+ARTICLE_STATUS = [
+    (&quot;PUBLISHED&quot;, &quot;Published&quot;),
+    (&quot;DRAFT&quot;, &quot;Draft&quot;),
+]
+
+class Article(models.Model):
+    title = models.CharField(max_length=128)
+    description = models.CharField(max_length=512)
+    content = models.TextField()
+    status = models.CharField(max_length=16, choices=ARTICLE_STATUS, default=&quot;DRAFT&quot;)
+
+    def __str__(self):
+        return self.title
+
+</code></pre>
+<p>Let's say we have a simple model <code>Article</code> with a few typical attributes like <code>title</code>, <code>description</code>, <code>content</code>, and <code>status</code>. We have the status as a choice field from two options as <code>Draft</code> and <code>Published</code>. It could be a boolean field, but that looks too gross for a article status.</p>
+<pre><code class="language-python">
+from blog.models import Article
+
+articles = Article.objects.filter(status=&quot;draft&quot;)
+
+for i in range(len(articles)):
+    articles[i].status = &quot;published&quot;
+
+Article.objects.bulk_update(articles, [&quot;status&quot;,])
+
+</code></pre>
+<p>In the above code, the <code>Articles</code> model is filtered by the status of <code>draft</code>. We iterate over the <code>QuerySet</code> which will contain the objects of the articles, by setting the object's properties to the value we want to set. We are jsut setting the value of the property of the object for each object.</p>
+<p>This just makes a changes to the <code>QuerySet</code>, by using the <code>bulk_update</code> method, the two parameters required are the <code>QuerySet</code> and the list of <code>fields</code> which are to be updated. The function returns the number of objects/records updated.</p>
+<pre><code class="language-python">&gt;&gt;&gt; from blog.models import Article
+&gt;&gt;&gt; articles = Article.objects.filter(status=&quot;DRAFT&quot;)
+&gt;&gt;&gt; articles
+&lt;QuerySet [&lt;Article: test 1&gt;, &lt;Article: test 3&gt;]&gt;
+
+&gt;&gt;&gt; for i in range(len(articles)):
+...     articles[i].status = &quot;PUBLISHED&quot;
+...
+&gt;&gt;&gt; articles
+&lt;QuerySet [&lt;Article: test 1&gt;, &lt;Article: test 3&gt;]&gt;
+&gt;&gt;&gt;
+
+&gt;&gt;&gt; Article.objects.bulk_update(articles, ['status',])
+2
+
+&gt;&gt;&gt; Article.obejcts.get(title=&quot;test 1&quot;).status
+'PUBLISHED'
+
+&gt;&gt;&gt; Article.objects.filter(status=&quot;DRAFT&quot;)
+&lt;QuerySet []&gt;
+&gt;&gt;&gt;
+</code></pre>
+<p>As, we can see here there were two obejcts <code>test 1</code> and <code>test 2</code> objects with the status as <code>Draft</code>. By iterating over the queryset and assigning the status of the object to published, the query set was changed and modified locally.
+By using the <code>bulk_update</code> method, we parsed the queryset and the list of attributes to be updated into the function. This gives us the number of objects which were updated, in this case <code>2</code>. We then look into the article actual record in the database and it has indeed updated to the value we set in this operation.</p>
+
+            </div>
+        </article>
+    </main>
+    
+    <footer class="site-footer">
+        <div class="container">
+            <p>&copy; Techstructive Blog. All rights reserved.</p>
+        </div>
+    </footer>
+
+
+    <script>
+    </script>
+</body>
+</html>
